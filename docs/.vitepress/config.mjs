@@ -19,6 +19,7 @@ export default defineConfig({
       { text: "Docs", link: "/guide/getting-started" },
       { text: "Core Mechanics", link: "/mechanics/architecture" },
       { text: "Configuration", link: "/config/overview" },
+      { text: "Develop", link: "/develop/build-and-release" },
       { text: "GitHub", link: "https://github.com/tulkun-lab/tulkun" }
     ],
     sidebar: {
@@ -56,6 +57,14 @@ export default defineConfig({
             { text: "Skills and Tools", link: "/mechanics/skills-and-tools" },
             { text: "Subagents and Workboards", link: "/mechanics/subagents-and-workboards" },
             { text: "Safety Model", link: "/mechanics/safety-model" }
+          ]
+        }
+      ],
+      "/develop/": [
+        {
+          text: "Develop",
+          items: [
+            { text: "Build and Release", link: "/develop/build-and-release" }
           ]
         }
       ]
