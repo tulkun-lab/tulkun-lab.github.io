@@ -258,10 +258,10 @@ If you are configuring behavior:
 
 If you are reasoning about continuity:
 
-- read [Context and Compaction](/mechanics/context-and-compaction) next
+- read [Context and Compaction](/guide/context-and-compaction) next
 
 ## Related
 
-- [Context and Compaction](/mechanics/context-and-compaction)
-- [Skills and Tools](/mechanics/skills-and-tools)
-- [Subagents and Workboards](/mechanics/subagents-and-workboards)
+- [Context and Compaction](/guide/context-and-compaction)
+- [Skills and Tools](/guide/skills-and-tools)
+- [Subagents and Workboards](/guide/subagents-and-workboards)

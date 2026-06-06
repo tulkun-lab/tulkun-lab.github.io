@@ -1,458 +1,208 @@
 # GitHub Issue Autofix
 
-`github-issue-autofix` is Tulkun's built-in scheduled workflow for repairing
-GitHub issues and opening pull requests.
+`github-issue-autofix` is Tulkun's built-in scheduled skill for repairing
+GitHub issues, following issue and PR conversations, and opening pull requests.
 
-It is designed for this operating mode:
+The skill enters and exits coordinator mode itself. At runtime it first calls
+`enter_coordinator_mode`, performs the workflow, records the result, and then
+calls `exit_coordinator_mode`.
 
-- the Tulkun gateway is already running
-- cron scheduling is enabled by the gateway runtime
-- the host has a GitHub account authenticated through `gh`
-- target issues are explicitly labeled for automation
-- Tulkun fixes at most a small number of issues per run
-- Tulkun always forks before pushing and creating a pull request
-- Tulkun keeps following issue and PR conversations after the first PR
+While coordinator mode is active:
 
-The workflow is implemented as a built-in skill named
-`github-issue-autofix`. The cron job stores the schedule and run-specific
-arguments. The repair logic, GitHub workflow, fork-first behavior, verification
-rules, and follow-up conversation handling live in the skill.
+- the main coordinator reads GitHub work and tracking state
+- one repository-scoped subagent handles implementation work for one repository
+- multiple repository subagents can run in parallel
+- the main coordinator reviews diffs and verification evidence
+- if review fails, the coordinator asks the same subagent to fix the issue
+- after acceptance, the coordinator commits, pushes, opens or updates PRs, and
+  creates or replies to GitHub comments
 
-## What It Does
+Coordinator mode has the same tool access as a normal Tulkun main agent. The
+boundary is enforced by the skill prompt: the coordinator must not directly
+implement repository source-code changes; repository subagents do that work.
 
-On each scheduled run, Tulkun:
+Tulkun does not merge pull requests. A maintainer still reviews and merges.
 
-1. loads the `github-issue-autofix` skill
-2. reads the cron job's `skill_args`
-3. checks or bootstraps required host dependencies
-4. verifies `gh auth status`
-5. processes follow-up comments on Tulkun-created issues and PRs
-6. selects a labeled open issue only when there is no follow-up work
-7. creates or reuses an isolated worktree for that issue
-8. forks the target repository before pushing any branch
-9. implements the fix, verifies it, commits it, and pushes to the fork
-10. opens a pull request against the target repository
-11. ends with a machine-readable `GITHUB_ISSUE_AUTOFIX_RESULT_JSON` line
+## Configuration File
 
-Tulkun does not merge the pull request. A maintainer still reviews and merges.
+`github-issue-autofix` is configured only through a YAML file at this
+conventional path:
 
-## Prerequisites
+```text
+$TULKUN_HOME/cron/github-issue-autofix.yaml
+```
 
-### Tulkun Runtime
+If `TULKUN_HOME` is not set, the path is:
 
-Start Tulkun in gateway mode first:
+```text
+$HOME/.tulkun/cron/github-issue-autofix.yaml
+```
+
+The skill reads this file at runtime on every scheduled run. There is no config
+path argument and no `tulkun cron github-issue-autofix` command. Put the YAML
+file at the conventional path for the workflow to take effect.
+
+## Example Config
+
+Each repository is configured separately under `repositories`:
+
+```yaml
+max_parallel_repositories: 2
+branch_prefix: autofix/issue-
+
+repositories:
+  - repo: tulkun-lab/tulkun
+    label: auto-fix
+    base: main
+    max_issues: 1
+    worktree_root: $TULKUN_HOME/workspace/github-issue-autofix/tulkun-lab-tulkun
+    tracking_state_dir: $TULKUN_HOME/workspace/github-issue-autofix/tulkun-lab-tulkun/state
+    fork_before_pr: true
+    fork_remote: tulkun-autofix-fork
+    track_followups: true
+    reply_to_issue_comments: true
+    reply_to_pr_comments: true
+    reply_to_review_threads: true
+
+  - repo: example/api
+    label: auto-fix
+    base: main
+    max_issues: 1
+    worktree_root: $TULKUN_HOME/workspace/github-issue-autofix/example-api
+    tracking_state_dir: $TULKUN_HOME/workspace/github-issue-autofix/example-api/state
+    fork_before_pr: true
+    fork_remote: tulkun-autofix-fork
+    track_followups: true
+    reply_to_issue_comments: true
+    reply_to_pr_comments: true
+    reply_to_review_threads: true
+```
+
+Unknown YAML keys are ignored.
+
+Defaults are applied when a repository field is omitted:
+
+| Field | Default |
+| --- | --- |
+| `max_parallel_repositories` | `4` |
+| `branch_prefix` | `autofix/issue-` |
+| `repositories[*].label` | `auto-fix` |
+| `repositories[*].base` | `main` |
+| `repositories[*].max_issues` | `1` |
+| `repositories[*].worktree_root` | `$TULKUN_HOME/workspace/github-issue-autofix/<repo-slug>` |
+| `repositories[*].tracking_state_dir` | `<worktree_root>/state` |
+| `repositories[*].fork_before_pr` | `true` |
+| `repositories[*].fork_remote` | `tulkun-autofix-fork` |
+| `repositories[*].track_followups` | `true` |
+| reply flags | `true` |
+
+## Create The Scheduled Job
+
+Create the job with the generic cron command:
+
+```bash
+tulkun cron create \
+  --name github-issue-autofix \
+  --schedule "0 * * * *" \
+  --skill github-issue-autofix
+```
+
+`--schedule` accepts standard 5-field Linux cron expressions:
+
+```text
+0 * * * *        # hourly
+*/30 * * * *     # every 30 minutes
+30 9 * * 1-5     # weekdays at 09:30
+```
+
+Descriptors such as `@hourly`, `@daily`, and `@every 1h` are also supported.
+
+Start Tulkun in gateway mode so the scheduler runs:
 
 ```bash
 tulkun gateway start
 ```
 
-The gateway runtime starts the cron scheduler. The scheduled job will not run
-on its interval unless the gateway is running.
-
-You can also trigger a created job manually with:
+You can trigger a created job manually:
 
 ```bash
 tulkun cron run <job-id>
 ```
 
-### GitHub Authentication
+## Update Or Delete
 
-Run GitHub CLI login manually on the same host:
+Update the YAML file directly to change repositories or repository parameters.
+The next scheduled run reads the current file from the conventional path.
 
-```bash
-gh auth login
-```
-
-This is intentionally manual. Tulkun checks `gh auth status`, but it does not
-perform interactive GitHub login for you because login requires an explicit
-GitHub identity, browser or device-code authorization, and token scope approval.
-
-The account authenticated in `gh` is the account Tulkun uses to:
-
-- read issues and comments
-- fork the target repository
-- push autofix branches to the fork
-- create pull requests
-- comment on issues and pull requests
-- reply to review follow-ups when needed
-
-For private repositories, that GitHub account must already have access to the
-target repository.
-
-### GitHub Label
-
-Only open issues carrying the configured label are eligible.
-
-The default label is:
-
-```text
-auto-fix
-```
-
-This label is the main safety gate. Do not label broad design requests,
-security-sensitive reports, or ambiguous issues unless they are appropriate for
-automated repair.
-
-## Create The Default Job
-
-For Tulkun's own repository, create the hourly job with:
+Use the generic cron commands to update or delete the scheduled job:
 
 ```bash
-tulkun cron github-issue-autofix
-```
-
-This creates a cron job with these defaults:
-
-| Setting | Default |
-| --- | --- |
-| Job name | `github-issue-autofix` |
-| Schedule | `@every 1h` |
-| Target repository | `tulkun-lab/tulkun` |
-| Issue label gate | `auto-fix` |
-| Base branch | `main` |
-| Maximum new issues per run | `1` |
-| Worktree root | `$TULKUN_HOME/workspace/github-issue-autofix` |
-| Follow-up tracking | enabled |
-| Tracking state directory | `<worktree root>/state` |
-| Fork before PR | enabled |
-| Fork remote name | `tulkun-autofix-fork` |
-
-## Configure A Different Repository
-
-Use `--repo` to select the target repository:
-
-```bash
-tulkun cron github-issue-autofix \
-  --repo owner/repo \
-  --label auto-fix \
-  --base main \
-  --schedule "@every 1h"
-```
-
-The target repository must use the `owner/repo` form.
-
-Tulkun does not assume the authenticated account has write permission to that
-repository. It forks first, pushes the repair branch to the fork, then creates a
-pull request back to the target repository.
-
-## Recommended Setup For Tulkun Itself
-
-When running the workflow against `github.com/tulkun-lab/tulkun`, use the local
-Tulkun checkout as the source directory:
-
-```bash
-tulkun cron github-issue-autofix \
-  --repo tulkun-lab/tulkun \
-  --label auto-fix \
-  --base main \
-  --schedule "@every 1h" \
-  --source-dir /path/to/tulkun
-```
-
-`--source-dir` should point at a clean local checkout of the target repository.
-Tulkun uses that checkout only as the source for `git worktree` creation. Code
-changes happen inside isolated issue worktrees under `--worktree-root`, not in
-the source checkout.
-
-## Complete CLI Configuration
-
-| Flag | Default | Meaning |
-| --- | --- | --- |
-| `--name` | `github-issue-autofix` | Cron job name. |
-| `--schedule` | `@every 1h` | Run interval or 5-field cron expression. |
-| `--repo` | `tulkun-lab/tulkun` | Target GitHub repository in `owner/repo` form. |
-| `--label` | `auto-fix` | Required issue label for selecting new issues. |
-| `--base` | `main` | Target repository base branch for worktrees and PRs. |
-| `--max-issues` | `1` | Maximum new issues to repair in one run. |
-| `--worktree-root` | `$TULKUN_HOME/workspace/github-issue-autofix` | Directory for isolated issue worktrees and tracking state. |
-| `--source-dir` | empty | Existing local checkout used for `git worktree` creation. |
-| `--prompt` | empty | Extra instruction appended to the scheduled skill run. |
-| `--channel` | empty | Optional delivery channel ID for job output. |
-| `--session` | empty | Optional delivery session ID for job output. |
-
-`--schedule` accepts `@every <duration>` values such as `@every 1h` and 5-field
-cron expressions. The built-in default is hourly.
-
-## Generated Skill Arguments
-
-The specialized command creates a normal cron job whose `skill` is:
-
-```text
-github-issue-autofix
-```
-
-It also writes `skill_args` similar to this:
-
-```text
-repo: tulkun-lab/tulkun
-label: auto-fix
-base: main
-max_issues: 1
-worktree_root: /path/to/.tulkun/workspace/github-issue-autofix
-fork_before_pr: true
-fork_remote: tulkun-autofix-fork
-track_followups: true
-tracking_state_dir: /path/to/.tulkun/workspace/github-issue-autofix/state
-reply_to_issue_comments: true
-reply_to_pr_comments: true
-reply_to_review_threads: true
-source_dir: /path/to/tulkun
-```
-
-These arguments are passed into the skill as run-specific configuration. The
-skill body remains the source of truth for the workflow.
-
-## Fork-First PR Semantics
-
-The workflow must not assume Tulkun has direct write access to the target
-repository.
-
-For every repair, Tulkun follows this model:
-
-1. create or reuse a fork with `gh repo fork <repo> --clone=false --remote=false`
-2. fetch the base branch from the target repository
-3. create an isolated worktree from `origin/<base>`
-4. add or update the fork remote named `tulkun-autofix-fork`
-5. push the autofix branch to the fork remote
-6. create the PR with `--head <fork-owner>:<branch>`
-
-Branches use the built-in prefix:
-
-```text
-autofix/issue-
-```
-
-The source checkout is never edited directly. The base branch is never pushed.
-
-## Follow-Up Conversation
-
-The workflow is not a one-shot fixer. It continues conversations for issues and
-PRs where Tulkun already participated.
-
-Before selecting a new issue, each run checks:
-
-- issue comments after Tulkun's last action
-- PR comments after Tulkun's last action
-- review comments
-- unresolved review threads
-- maintainer requests for changes
-- failed verification reports that require a response
-
-If a follow-up only asks a question, Tulkun replies directly and updates its
-tracking state.
-
-If a follow-up requests a code change, Tulkun reuses the same issue worktree and
-branch, applies the change, reruns verification, pushes to the fork remote, and
-comments with the result.
-
-The tracking state lives under:
-
-```text
-<worktree root>/state
-```
-
-The workflow does not post empty acknowledgement comments. It replies only when
-there is an actionable question, requested clarification, review comment,
-requested change, or verification issue.
-
-## Dependency Bootstrap
-
-The built-in skill has a bundled dependency bootstrap script:
-
-```text
-<cron_skill_dir>/scripts/bootstrap-deps.sh
-```
-
-During preflight the skill runs that script before using GitHub or Git tooling.
-The script checks for:
-
-- `git`
-- `gh`
-
-If a dependency is missing, the script detects the host operating system and CPU
-architecture with `uname -s` and `uname -m`.
-
-For `gh`, it tries a supported package manager first. If that is not available,
-it downloads a matching GitHub CLI release for the detected OS and architecture.
-
-For `git`, it uses a supported package manager when possible. If no supported
-installer is available, it fails clearly and points the operator to Git's
-official install path.
-
-The default local install directory is:
-
-```text
-$HOME/.tulkun/bin
-```
-
-Override it with:
-
-```bash
-export TULKUN_GITHUB_ISSUE_AUTOFIX_DEPS=/custom/bin
-```
-
-Make sure that directory is on `PATH` for future gateway runs if the bootstrap
-script installs binaries there.
-
-## Skill Priority And Override Behavior
-
-The cron job references the normal skill name:
-
-```text
-github-issue-autofix
-```
-
-Tulkun resolves it through the normal skill root priority order. Built-in system
-skills are installed under:
-
-```text
-$TULKUN_HOME/skills/.system
-```
-
-That `.system` root is always the lowest-priority fallback. A same-name skill in
-a project, workspace, or user skill root shadows the built-in system skill.
-
-This is intentional. The built-in workflow provides the product default, while
-operators can override it by installing a higher-priority
-`github-issue-autofix` skill.
-
-## Inspect And Operate The Job
-
-List cron jobs:
-
-```bash
-tulkun cron jobs
-```
-
-Inspect a job:
-
-```bash
-tulkun cron inspect <job-id>
-```
-
-Trigger a job immediately:
-
-```bash
-tulkun cron run <job-id>
-```
-
-Pause or resume a job:
-
-```bash
-tulkun cron pause <job-id>
-tulkun cron resume <job-id>
-```
-
-Delete a job:
-
-```bash
+tulkun cron update <job-id> --schedule "*/30 * * * *"
 tulkun cron delete <job-id>
 ```
 
-The gateway API also exposes cron job routes under `/api/cron/jobs` for service
-integrations that need to create, inspect, update, pause, resume, run, or delete
-jobs programmatically.
+## Prerequisites
 
-## Safety Model
-
-The built-in workflow enforces these rules:
-
-- only open issues with the configured label are eligible
-- follow-up work is processed before new issue selection
-- one new issue per run by default
-- ambiguous, security-sensitive, design-heavy, or under-specified issues are
-  skipped
-- all code changes happen in isolated worktrees
-- the target repository is forked before branch push
-- autofix branches are pushed to the fork remote
-- PRs are opened from the fork into the target repository
-- the base branch is never committed to or pushed
-- the source checkout is never edited directly
-- tests, secret validation, permission checks, and tool safety must not be
-  weakened to make an issue pass
-- no empty acknowledgement-only comments are posted
-- maintainers still review and merge PRs
-
-## Troubleshooting
-
-### The job does not run every hour
-
-Confirm the gateway is running:
-
-```bash
-tulkun gateway status
-```
-
-Then inspect the job:
-
-```bash
-tulkun cron jobs
-tulkun cron inspect <job-id>
-```
-
-The scheduler is part of the gateway runtime, so a stopped gateway means no
-scheduled execution.
-
-### GitHub authentication fails
-
-Run:
-
-```bash
-gh auth status
-```
-
-If it fails, run:
+Run GitHub CLI login on the same host:
 
 ```bash
 gh auth login
 ```
 
-Use the GitHub account that should own the fork, push branches, create PRs, and
-reply to comments.
+The authenticated account is used to read issues and PRs, fork target
+repositories, push autofix branches, create or update pull requests, and reply
+to comments.
 
-### Tulkun cannot create a PR
+Only open issues carrying the configured label are eligible. The default label
+is `auto-fix`.
 
-Check these conditions:
+## Source Checkouts And Worktrees
 
-- the authenticated `gh` account can read the target repository
-- the account can fork the repository
-- the fork exists or can be created
-- the worktree branch was pushed to the fork remote
-- the PR head uses `<fork-owner>:<branch>`
+Code changes happen inside isolated worktrees under each repository's
+`worktree_root`. The source checkout and `main` branch are not modified.
 
-The workflow does not require direct write access to the target repository.
+If `source_dir` is set for a repository, it points at an existing local checkout
+used as the source for `git worktree` creation. Otherwise, the repository
+subagent creates or reuses a source checkout under that repository's
+`worktree_root`.
 
-### Dependency bootstrap installs `gh` but later runs cannot find it
+Tulkun always forks before pushing. It pushes autofix branches to the fork
+remote and opens pull requests back to the target repository.
 
-If the script installed `gh` into `$HOME/.tulkun/bin`, add that directory to the
-environment used by the Tulkun gateway:
+## Runtime Flow
 
-```bash
-export PATH="$HOME/.tulkun/bin:$PATH"
-```
+On each run, the skill:
 
-If you use a custom install directory, also set:
+1. bootstraps required host dependencies through
+   `scripts/bootstrap-deps.sh`
+2. loads `$TULKUN_HOME/cron/github-issue-autofix.yaml` through
+   `scripts/load-config.py`
+3. checks `gh auth status`
+4. processes follow-up comments, PR comments, reviews, and review threads before
+   selecting new issues
+5. selects at most `max_issues` actionable issues per repository
+6. starts at most one active subagent per repository
+7. limits parallel repositories with `max_parallel_repositories`
+8. reviews every subagent result as the coordinator
+9. sends concrete fixes back to the same repository subagent until accepted or
+   failed for a real blocker
+10. commits accepted work, pushes to the fork remote, creates or updates PRs,
+    and creates or replies to GitHub comments
+11. calls `exit_coordinator_mode`
 
-```bash
-export TULKUN_GITHUB_ISSUE_AUTOFIX_DEPS=/custom/bin
-export PATH="/custom/bin:$PATH"
-```
+The run ends with a machine-readable `GITHUB_ISSUE_AUTOFIX_RESULT_JSON` line.
 
-### A labeled issue is skipped
+## Troubleshooting
 
-Tulkun may skip an issue if it is ambiguous, security-sensitive, mostly design
-discussion, too broad, under-specified, already has an open autofix PR, or cannot
-be repaired reliably in the current run.
+If the job fails before selecting issues, check:
 
-### A PR review comment did not receive a reply
+- the YAML file exists at `$TULKUN_HOME/cron/github-issue-autofix.yaml`
+- `repositories` is a non-empty YAML list
+- each `repo` uses `owner/repo`
+- `gh auth status` succeeds
+- the authenticated GitHub account can read each target repository
+- each target issue has the configured label
 
-The workflow replies only when Tulkun is expected to respond. It avoids empty
-acknowledgements and repetitive status comments. If a review comment requests a
-specific change or asks a question, the next run should process it before
-selecting a new issue.
-
-## Related
-
-- [CLI Command Reference](/guide/cli-command-reference)
-- [Skills and Tools](/mechanics/skills-and-tools)
-- [Runtime, Gateway, And Channels](/config/runtime-gateway-and-channels)
+If no PR is created, check whether the issue was skipped because it is
+ambiguous, security-sensitive, already has an open autofix PR, or lacks a clear
+implementation path.

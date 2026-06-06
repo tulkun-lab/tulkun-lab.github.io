@@ -161,4 +161,4 @@ Usage guidance:
 
 - [Runtime, Gateway, And Channels](/config/runtime-gateway-and-channels)
 - [Agents And Models](/config/agents-and-models)
-- [Skills and Tools](/mechanics/skills-and-tools)
+- [Skills and Tools](/guide/skills-and-tools)

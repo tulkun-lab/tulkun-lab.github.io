@@ -231,5 +231,5 @@ That model keeps the product understandable even as the capability surface grows
 ## Related
 
 - [CLI Command Reference](/guide/cli-command-reference)
-- [Subagents and Workboards](/mechanics/subagents-and-workboards)
-- [Safety Model](/mechanics/safety-model)
+- [Subagents and Workboards](/guide/subagents-and-workboards)
+- [Safety Model](/guide/safety-model)

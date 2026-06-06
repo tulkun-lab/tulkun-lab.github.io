@@ -14,9 +14,13 @@ export default {
       theme: "neutral"
     });
     const renderMermaid = async () => {
-      const blocks = document.querySelectorAll(".language-mermaid pre code");
-      for (const block of blocks) {
-        if (block.dataset.mermaidRendered === "true") {
+      const hosts = document.querySelectorAll(".language-mermaid");
+      for (const host of hosts) {
+        if (host.dataset.mermaidRendered === "true") {
+          continue;
+        }
+        const block = host.querySelector("pre code");
+        if (!block) {
           continue;
         }
         const source = block.textContent || "";
@@ -29,16 +33,12 @@ export default {
           const wrapper = document.createElement("div");
           wrapper.className = "mermaid-render";
           wrapper.innerHTML = svg;
-          const host = block.closest(".language-mermaid");
-          if (!host) {
-            continue;
-          }
           const existing = host.querySelector(".mermaid-render");
           if (existing) {
             existing.remove();
           }
           host.appendChild(wrapper);
-          block.dataset.mermaidRendered = "true";
+          host.dataset.mermaidRendered = "true";
         } catch (error) {
           console.error("Failed to render mermaid diagram", error);
         }

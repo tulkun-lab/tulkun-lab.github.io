@@ -217,5 +217,5 @@ That layered interpretation matches how the product is actually structured.
 ## Related
 
 - [Sandbox And Permissions](/config/sandbox-and-permissions)
-- [Skills and Tools](/mechanics/skills-and-tools)
-- [Architecture](/mechanics/architecture)
+- [Skills and Tools](/guide/skills-and-tools)
+- [Architecture](/guide/architecture)

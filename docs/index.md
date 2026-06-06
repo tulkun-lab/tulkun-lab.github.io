@@ -12,12 +12,6 @@ hero:
     - theme: brand
       text: Get Started
       link: /guide/getting-started
-    - theme: alt
-      text: Run Your First Session
-      link: /guide/first-session-tutorial
-    - theme: alt
-      text: Understand the System
-      link: /mechanics/architecture
 
 features:
   - title: Built For Real Work
@@ -65,15 +59,16 @@ execution, long-running work, and agent coordination.
 ### Start Here
 
 1. [Getting Started](/guide/getting-started)
-2. [First Session Tutorial](/guide/first-session-tutorial)
-3. [CLI and Surfaces](/guide/cli-and-surfaces)
-4. [Telemetry](/guide/telemetry)
+2. [CLI and Surfaces](/guide/cli-and-surfaces)
+3. [Architecture](/guide/architecture)
+4. [Memory Systems](/guide/memory-systems)
 
 This path answers:
 
 - How do I start Tulkun?
 - What should I expect on first run?
 - Which surface should I use?
+- Which core feature area should I read next?
 
 ### Configure Tulkun
 
@@ -89,14 +84,14 @@ This path answers:
 - How do I configure the main agent and its model providers?
 - How are safety decisions made and enforced?
 
-### Understand The Core Mechanics
+### Understand The System
 
-1. [Architecture](/mechanics/architecture)
-2. [Context and Compaction](/mechanics/context-and-compaction)
-3. [Memory Systems](/mechanics/memory-systems)
-4. [Skills and Tools](/mechanics/skills-and-tools)
-5. [Subagents and Workboards](/mechanics/subagents-and-workboards)
-6. [Safety Model](/mechanics/safety-model)
+1. [Architecture](/guide/architecture)
+2. [Context and Compaction](/guide/context-and-compaction)
+3. [Memory Systems](/guide/memory-systems)
+4. [Skills and Tools](/guide/skills-and-tools)
+5. [Subagents and Workboards](/guide/subagents-and-workboards)
+6. [Safety Model](/guide/safety-model)
 
 This path answers:
 
@@ -166,16 +161,8 @@ flowchart TB
     F --> K
 ```
 
-## Documentation Principles
-
-::: tip Product-facing by design
-This site is written as official product documentation. It explains what Tulkun
-does, how to use it, and how to reason about its behavior. It is meant to feel
-like a product manual, not an internal engineering memo.
-:::
-
 ## Continue Reading
 
 - [Getting Started](/guide/getting-started)
 - [CLI Command Reference](/guide/cli-command-reference)
-- [Architecture](/mechanics/architecture)
+- [Architecture](/guide/architecture)

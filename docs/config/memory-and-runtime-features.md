@@ -1,7 +1,7 @@
 # Memory, Compaction, And Runtime Features
 
 This page documents the configuration that shapes Tulkun's memory-facing and
-session-behavior features without explaining the underlying mechanics in depth.
+session-behavior features without explaining the underlying behavior in depth.
 
 Use this page for:
 
@@ -173,4 +173,4 @@ When it matters:
 
 - [Agents And Models](/config/agents-and-models)
 - [Hooks, TUI, And Skill Extensions](/config/hooks-tui-and-skill-extensions)
-- [Memory Systems](/mechanics/memory-systems)
+- [Memory Systems](/guide/memory-systems)

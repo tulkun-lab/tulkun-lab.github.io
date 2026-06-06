@@ -221,6 +221,6 @@ That is the right mental model for using Tulkun effectively in long sessions.
 
 ## Related
 
-- [Architecture](/mechanics/architecture)
-- [Memory Systems](/mechanics/memory-systems)
-- [Safety Model](/mechanics/safety-model)
+- [Architecture](/guide/architecture)
+- [Memory Systems](/guide/memory-systems)
+- [Safety Model](/guide/safety-model)

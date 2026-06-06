@@ -302,8 +302,8 @@ It gives Tulkun the ability to:
 
 If you are trying to understand one specific part of Tulkun, continue with:
 
-- [Context and Compaction](/mechanics/context-and-compaction) for prompt-budget management
-- [Memory Systems](/mechanics/memory-systems) for recall, session memory, and consolidation
-- [Skills and Tools](/mechanics/skills-and-tools) for capability surfaces
-- [Subagents and Workboards](/mechanics/subagents-and-workboards) for delegation and task structure
-- [Safety Model](/mechanics/safety-model) for approvals, sandboxing, and guardrails
+- [Context and Compaction](/guide/context-and-compaction) for prompt-budget management
+- [Memory Systems](/guide/memory-systems) for recall, session memory, and consolidation
+- [Skills and Tools](/guide/skills-and-tools) for capability surfaces
+- [Subagents and Workboards](/guide/subagents-and-workboards) for delegation and task structure
+- [Safety Model](/guide/safety-model) for approvals, sandboxing, and guardrails

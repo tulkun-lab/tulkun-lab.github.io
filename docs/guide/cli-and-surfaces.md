@@ -137,4 +137,4 @@ That is a much better mental model than "Tulkun is a chatbot with some commands"
 
 - [Getting Started](/guide/getting-started)
 - [CLI Command Reference](/guide/cli-command-reference)
-- [Architecture](/mechanics/architecture)
+- [Architecture](/guide/architecture)

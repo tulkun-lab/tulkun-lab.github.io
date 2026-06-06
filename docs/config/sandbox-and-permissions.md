@@ -217,5 +217,5 @@ Use it when:
 ## Related
 
 - [Runtime, Gateway, And Channels](/config/runtime-gateway-and-channels)
-- [Safety Model](/mechanics/safety-model)
+- [Safety Model](/guide/safety-model)
 - [CLI Command Reference](/guide/cli-command-reference)

@@ -335,6 +335,6 @@ Use workboards when:
 
 ## Related
 
-- [Architecture](/mechanics/architecture)
-- [Skills and Tools](/mechanics/skills-and-tools)
-- [Safety Model](/mechanics/safety-model)
+- [Architecture](/guide/architecture)
+- [Skills and Tools](/guide/skills-and-tools)
+- [Safety Model](/guide/safety-model)

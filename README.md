@@ -67,8 +67,8 @@ That directory is the GitHub Pages deployment artifact.
   Main page content.
 - `docs/config/*.md`
   Configuration reference manual.
-- `docs/mechanics/*.md`
-  Deep mechanism and architecture explanations.
+- `docs/guide/*.md`
+  Product guide pages, tutorials, and system behavior explanations.
 - `docs/.vitepress/config.mjs`
   Site navigation, sidebar, footer, and search config.
 - `docs/.vitepress/theme/index.js`

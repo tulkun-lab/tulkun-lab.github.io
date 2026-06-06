@@ -1,97 +1,149 @@
 # Getting Started
 
-This page gives a product-level introduction to starting Tulkun and choosing the
-right runtime path.
+This is the first guide page for Tulkun. It explains what Tulkun provides, what
+to expect during the first run, and where to go next after the interactive
+session opens.
 
 ## What Tulkun Provides
 
-Tulkun combines several capabilities in one system:
+Tulkun combines several capabilities in one local runtime:
 
 - an interactive terminal for direct coding work
-- a gateway runtime for service-backed usage
+- a gateway service for API-backed usage
 - configurable agents and model providers
 - memory features for retrieval, recall, and summarization
 - reusable skills and callable tools
 - workboards and subagents for structured execution
+- permission and sandbox controls around tool execution
 
-For a new user, the most important entry points are:
+For a new user, the main goal is to reach a valid interactive session first.
+After that, the rest of the guide explains the core runtime surfaces and
+features.
 
-- the interactive shell
-- the gateway service
+## What You Need
 
-## Choose A Startup Path
+Before starting Tulkun, make sure you have:
 
-Tulkun supports two practical ways to run locally.
+- a local terminal session
+- a Tulkun installation
+- valid model-provider credentials for the main agent
+- a workspace you are willing to trust for file access and tool execution
 
-### Direct Binary Path
-
-This is the better choice when:
-
-- you are developing Tulkun itself
-- you want explicit control over local binaries and runtime setup
-- you are debugging environment-sensitive behavior
-
-### Packaged Launcher Path
-
-This is the better choice when:
-
-- you want a more turnkey local install experience
-- you want Tulkun to resolve more runtime details for you
-- you want a smoother path for packaged usage
-
-In practice, the packaged launcher is designed to reduce setup friction around
-runtime dependencies and skill discovery.
-
-## First Run Expectations
+## Start An Interactive Session
 
 A clean first run is not just "open chat immediately". Tulkun performs a gated
-startup flow so that the interactive session begins in a valid state.
+startup flow so the interactive session begins in a valid state.
 
 ```mermaid
 flowchart TD
-    A["Start Tulkun"] --> B["Check interactive terminal requirements"]
-    B --> C["Confirm workspace trust"]
-    C --> D["Run first-time setup if needed"]
+    A["Launch Tulkun"] --> B["Confirm interactive terminal"]
+    B --> C["Trust the workspace"]
+    C --> D["Complete first-time setup if needed"]
     D --> E["Validate main agent model configuration"]
     E --> F["Open session"]
-    F --> G["Launch interactive runtime"]
+    F --> G["Enter interactive runtime"]
 ```
 
-As a user, this means you should expect some combination of:
+### Step 1: Launch Tulkun Interactively
 
-- workspace trust confirmation
-- onboarding or setup guidance on the first run
-- model or provider configuration requirements before the main shell opens
+Start Tulkun through its interactive entry path.
 
-That is normal behavior.
+If Tulkun does not detect a real terminal, it will not continue into the main
+interactive experience. That is expected: Tulkun distinguishes interactive and
+non-interactive entry conditions.
 
-## If You Want The Interactive Shell
+### Step 2: Trust The Workspace
 
-Use the interactive entry path when you want:
+If this is your first time entering the current workspace, Tulkun asks whether
+the workspace should be trusted.
 
-- a terminal-first workflow
+This matters because Tulkun is designed for file access, code editing, tool
+execution, and other operations that should not silently begin in an unknown
+directory context.
+
+When prompted:
+
+1. review the workspace path
+2. accept trust if this is the directory you intend to work in
+3. decline if you opened the wrong location
+
+### Step 3: Complete Initial Setup
+
+On a fresh installation, Tulkun may enter a first-time setup flow before opening
+the main session.
+
+The purpose of this setup stage is to ensure the runtime does not start in a
+half-configured state.
+
+Typical outcomes:
+
+- Tulkun proceeds directly if setup is already complete
+- Tulkun guides you through onboarding if required configuration is missing
+
+### Step 4: Confirm Main Model Readiness
+
+Tulkun requires a working primary model configuration for the main agent before
+the session starts.
+
+At this stage, a working setup means:
+
+- a provider is selected
+- a model is selected
+- required credentials and connection details are available
+
+If that configuration is incomplete, Tulkun stops and asks you to fix it rather
+than entering a misleading partial session.
+
+### Step 5: Enter The Runtime
+
+Once the startup checks pass, Tulkun opens the session and launches the
+interactive runtime.
+
+Expected capabilities include:
+
+- entering prompts
+- seeing session state
+- using slash commands
+- working through run results and approvals
+
+## Choose The Right Surface
+
+Tulkun exposes more than one product surface. Start with the interactive
+terminal unless you specifically need service-backed usage.
+
+### Interactive Terminal
+
+Use this surface when you want:
+
+- terminal-first coding work
 - slash commands
 - approvals in context
 - visible session and run continuity
 
-If Tulkun cannot start a valid interactive session, it does not silently degrade
-into an unclear state. It stops and tells you what is missing.
-
-## If You Want The Gateway Service
+### Gateway Service
 
 Use the gateway path when you want:
 
-- service-backed usage
+- API-backed usage
 - shared access patterns
-- gateway and web-oriented workflows
+- web-oriented workflows
 - runtime APIs and service health management
 
-The gateway path still depends on valid first-time setup and main model
-configuration.
+The gateway path still depends on valid setup and model configuration.
+
+### Management CLI
+
+Use command-oriented workflows when you need to inspect or operate Tulkun:
+
+- runtime status
+- model configuration
+- memory state
+- skills
+- active or recent runs
 
 ## First Checks To Run
 
-Once Tulkun is installed, these are the most useful checks to perform early:
+After Tulkun is installed, these are the most useful checks to perform early:
 
 - inspect runtime status
 - verify the configured model provider
@@ -99,52 +151,56 @@ Once Tulkun is installed, these are the most useful checks to perform early:
 - confirm memory status
 - list installed skills
 
-Those checks tell you whether Tulkun is merely installed or actually ready for
+These checks tell you whether Tulkun is merely installed or actually ready for
 useful work.
 
 ## Common Misunderstandings
 
-### Tulkun is not only a chat interface
+### Tulkun Is Not Only A Chat Interface
 
-It has multiple user surfaces and operational workflows. Some features are best
-understood as runtime systems rather than UI buttons.
+Tulkun has multiple user surfaces and operational workflows. Some features are
+best understood as runtime systems rather than UI buttons.
 
-### Startup validation is intentional
+### Startup Validation Is Intentional
 
-Tulkun validates trust, setup, and core model readiness before starting the main
-interactive experience. That is part of the product design, not an incidental
-friction point.
+Tulkun validates trust, setup, and model readiness before starting the main
+interactive experience. That is part of the product design.
 
-### Not every feature belongs to the same layer
+### Not Every Feature Belongs To The Same Layer
 
-Some concerns belong to:
-
-- the interactive experience
-- the gateway/service layer
-- core runtime systems shared by both
-
-This is why the rest of the documentation is organized by surface and mechanism.
-
-## Recommended Reading Order
-
-1. [First Session Tutorial](/guide/first-session-tutorial)
-2. [CLI and Surfaces](/guide/cli-and-surfaces)
-3. [CLI Command Reference](/guide/cli-command-reference)
-4. [Configuration Overview](/config/overview)
-5. [Architecture](/mechanics/architecture)
+Some concerns belong to the interactive experience, some belong to the gateway
+service, and some are shared runtime systems used by both.
 
 ## Troubleshooting
 
-### Tulkun does not enter the interactive shell
+### Tulkun Does Not Enter The Interactive Shell
 
 Most often, one of these is true:
 
 - the session is not running in an interactive terminal
 - workspace trust has not been granted yet
 - initial setup is incomplete
-- the main agent model configuration is not ready
+- the main agent model configuration is missing or invalid
 
-### Tulkun starts, but you are unsure which surface you are using
+### Tulkun Keeps Redirecting Into Setup
 
-Read [CLI and Surfaces](/guide/cli-and-surfaces). Many practical questions become
-clear once you distinguish the terminal workflow from the gateway workflow.
+That usually means the installation is present but not operationally ready yet.
+Finish the required onboarding or model configuration instead of retrying the
+same launch path unchanged.
+
+### You Expected A Gateway Or Web Experience
+
+Start with the gateway workflow rather than the interactive shell workflow.
+
+## Continue Reading
+
+1. [CLI and Surfaces](/guide/cli-and-surfaces)
+2. [Architecture](/guide/architecture)
+3. [Context and Compaction](/guide/context-and-compaction)
+4. [Memory Systems](/guide/memory-systems)
+5. [Skills and Tools](/guide/skills-and-tools)
+6. [Subagents and Workboards](/guide/subagents-and-workboards)
+7. [Safety Model](/guide/safety-model)
+8. [GitHub Issue Autofix](/guide/github-issue-autofix)
+9. [CLI Command Reference](/guide/cli-command-reference)
+10. [Telemetry](/guide/telemetry)

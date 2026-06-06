@@ -114,11 +114,21 @@ body {
   text-underline-offset: 0.14em;
 }
 
-.language-mermaid .mermaid-render {
-  margin-top: 16px;
+.vp-doc div.language-mermaid {
   overflow-x: auto;
-  border-top: 1px solid var(--vp-c-divider);
-  padding-top: 16px;
+  border: 1px solid var(--vp-c-divider);
+  background: var(--vp-c-bg-elv);
+  padding: 18px;
+}
+
+.language-mermaid > pre,
+.language-mermaid .copy,
+.language-mermaid .lang {
+  display: none !important;
+}
+
+.language-mermaid .mermaid-render {
+  overflow-x: auto;
 }
 
 .language-mermaid .mermaid-render svg {

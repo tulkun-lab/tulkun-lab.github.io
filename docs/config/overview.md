@@ -3,10 +3,10 @@
 Tulkun uses one primary runtime configuration file, usually `~/.tulkun/tulkun.yaml`.
 This section is the reference manual for that file.
 
-This is intentionally different from the mechanics documentation:
+This is intentionally narrower than the guide pages:
 
 - `/config/*` explains what each setting controls, how to use it, and what its default is.
-- `/mechanics/*` explains why the system behaves the way it does.
+- `/guide/*` explains product workflows and system behavior.
 
 ## How Configuration Is Resolved
 
@@ -109,7 +109,7 @@ This section does not explain the deeper system design for:
 - workboard execution semantics
 - safety layering
 
-Those topics are documented under `/mechanics`.
+Those topics are documented under `/guide`.
 
 ## Quick Start Reading Order
 
@@ -123,6 +123,6 @@ If you are configuring Tulkun for the first time, read in this order:
 
 ## Related
 
-- [Architecture](/mechanics/architecture)
-- [Context and Compaction](/mechanics/context-and-compaction)
-- [Memory Systems](/mechanics/memory-systems)
+- [Architecture](/guide/architecture)
+- [Context and Compaction](/guide/context-and-compaction)
+- [Memory Systems](/guide/memory-systems)

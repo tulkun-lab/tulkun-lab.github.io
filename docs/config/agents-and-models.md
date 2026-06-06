@@ -430,4 +430,4 @@ Accepted provider values:
 
 - [Memory, Compaction, And Runtime Features](/config/memory-and-runtime-features)
 - [Sandbox And Permissions](/config/sandbox-and-permissions)
-- [Subagents and Workboards](/mechanics/subagents-and-workboards)
+- [Subagents and Workboards](/guide/subagents-and-workboards)

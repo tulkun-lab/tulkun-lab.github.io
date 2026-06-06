@@ -2,7 +2,7 @@
 
 This page explains the Tulkun CLI as a product surface.
 
-The goal is not to list every flag mechanically. The goal is to help a user
+The goal is not to list every flag by rote. The goal is to help a user
 understand which command family to reach for and why.
 
 ## Command Families
@@ -145,17 +145,21 @@ not conversation flow.
 Use this family to define scheduled work such as recurring prompts or timed
 execution.
 
-The built-in GitHub issue repair workflow is created with:
+The built-in GitHub issue repair workflow is created as a normal cron skill:
 
 ```bash
-tulkun cron github-issue-autofix
+tulkun cron create \
+  --name github-issue-autofix \
+  --schedule "0 * * * *" \
+  --skill github-issue-autofix
 ```
 
 Use it when Tulkun should periodically inspect labeled GitHub issues, repair
 them in isolated worktrees, fork before pushing, create pull requests, and keep
 following later issue or PR comments. See
 [GitHub Issue Autofix](/guide/github-issue-autofix) for the full setup and
-configuration reference.
+configuration file reference. The YAML config must be placed at
+`$TULKUN_HOME/cron/github-issue-autofix.yaml`.
 
 ### Other advanced command families
 
