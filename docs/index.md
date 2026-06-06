@@ -67,6 +67,7 @@ execution, long-running work, and agent coordination.
 1. [Getting Started](/guide/getting-started)
 2. [First Session Tutorial](/guide/first-session-tutorial)
 3. [CLI and Surfaces](/guide/cli-and-surfaces)
+4. [Telemetry](/guide/telemetry)
 
 This path answers:
 

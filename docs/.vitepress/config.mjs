@@ -30,7 +30,9 @@ export default defineConfig({
             { text: "Getting Started", link: "/guide/getting-started" },
             { text: "First Session Tutorial", link: "/guide/first-session-tutorial" },
             { text: "CLI and Surfaces", link: "/guide/cli-and-surfaces" },
-            { text: "CLI Command Reference", link: "/guide/cli-command-reference" }
+            { text: "Telemetry", link: "/guide/telemetry" },
+            { text: "CLI Command Reference", link: "/guide/cli-command-reference" },
+            { text: "GitHub Issue Autofix", link: "/guide/github-issue-autofix" }
           ]
         }
       ],

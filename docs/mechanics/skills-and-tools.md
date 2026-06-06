@@ -109,6 +109,54 @@ In practice, skills can exist in different roots and scopes, which allows:
 That separation is important because some skills are product-level capabilities,
 while others are local workflow assets.
 
+## Skill Root Priority
+
+When Tulkun loads or resolves a skill by name, it searches the current skill
+roots in priority order. A same-name skill in a higher-priority root shadows the
+lower-priority copy.
+
+The current Tulkun runtime skill roots are:
+
+| Priority | Root |
+| --- | --- |
+| 1 | `<current-workspace>/.tulkun/skills` |
+| 2 | `$TULKUN_HOME/workspace/skills` |
+| 3 | `$TULKUN_HOME/skills` |
+| 4 | `~/.agents/skills` |
+| 5 | `$TULKUN_HOME/skills/.system` |
+
+The project root is resolved from the current working directory. `$TULKUN_HOME`
+is Tulkun's active home directory.
+
+Skills are stored under a root as:
+
+```text
+<skill-root>/<skill-name>/SKILL.md
+```
+
+For example, these all define a skill named `github-issue-autofix` at different
+priorities:
+
+```text
+<current-workspace>/.tulkun/skills/github-issue-autofix/SKILL.md
+$TULKUN_HOME/workspace/skills/github-issue-autofix/SKILL.md
+$TULKUN_HOME/skills/github-issue-autofix/SKILL.md
+$TULKUN_HOME/skills/.system/github-issue-autofix/SKILL.md
+```
+
+If more than one root contains the same skill name, Tulkun uses the first match
+in the priority table. That means:
+
+- a project skill overrides workspace, home, cross-tool, and system skills
+- a workspace skill overrides home, cross-tool, and system skills
+- a home skill overrides cross-tool and system skills
+- cross-tool skills override system skills
+- `$TULKUN_HOME/skills/.system` is always the lowest-priority fallback
+
+Built-in Tulkun skills are embedded in the Tulkun binary and installed into
+`$TULKUN_HOME/skills/.system`. They are available by default, but they do not
+override same-name project, workspace, or user-managed skills.
+
 ## Skill-Specific Configuration
 
 Some skills expose their own config under the `skills:` section of

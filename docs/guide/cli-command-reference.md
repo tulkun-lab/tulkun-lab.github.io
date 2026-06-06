@@ -145,6 +145,18 @@ not conversation flow.
 Use this family to define scheduled work such as recurring prompts or timed
 execution.
 
+The built-in GitHub issue repair workflow is created with:
+
+```bash
+tulkun cron github-issue-autofix
+```
+
+Use it when Tulkun should periodically inspect labeled GitHub issues, repair
+them in isolated worktrees, fork before pushing, create pull requests, and keep
+following later issue or PR comments. See
+[GitHub Issue Autofix](/guide/github-issue-autofix) for the full setup and
+configuration reference.
+
 ### Other advanced command families
 
 Tulkun also exposes advanced surfaces for areas such as:
@@ -185,4 +197,5 @@ Use this quick decision model:
 
 - [Getting Started](/guide/getting-started)
 - [CLI and Surfaces](/guide/cli-and-surfaces)
+- [GitHub Issue Autofix](/guide/github-issue-autofix)
 - [Configuration Overview](/config/overview)
