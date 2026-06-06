@@ -280,9 +280,9 @@ MCP server entries expose external tool or resource servers to Tulkun.
 | Field | Type | Default | Usage |
 | --- | --- | --- | --- |
 | `name` | string | empty | Logical server name. |
-| `transport` | string | empty | Transport kind such as `stdio` or `sse`. |
-| `url` | string | empty | Endpoint URL for network transports. |
-| `headers` | object | empty | Transport headers. |
+| `transport` | string | empty | Transport kind. Runtime accepts `stdio`, `streamable_http`, `sse`, and `websocket`. When omitted, Tulkun infers the transport from `url` and otherwise falls back to `stdio`. |
+| `url` | string | empty | Endpoint URL for network transports. Leave empty for `stdio`. |
+| `headers` | object | empty | Transport headers for HTTP, SSE, or WebSocket transports. `${ENV_NAME}` placeholders are supported. |
 | `oauth.mode` | string | empty, can be inferred | OAuth mode. |
 | `oauth.access_token` | string | empty | Cached access token. |
 | `oauth.token_type` | string | empty | Token type. |
@@ -296,10 +296,36 @@ MCP server entries expose external tool or resource servers to Tulkun.
 | `disable_standalone_sse` | boolean | `false` | Disables standalone SSE fallback. |
 | `command` | string | empty | Local command for stdio launch. |
 | `args` | string[] | empty | Command args. |
-| `env` | object | empty | Child-process environment overrides. |
-| `dir` | string | empty | Working directory for the child process. |
+| `env` | object | empty | Child-process environment overrides. `${ENV_NAME}` placeholders are supported. |
 | `inherit_parent_env` | boolean | `false` | Inherits parent environment. |
-| `expected_command_sha256` | string | empty | Pinned command hash. |
+| `expected_command_sha256` | string | empty | Optional pinned command hash for stdio launches. |
+
+### MCP Runtime Notes
+
+- MCP tools are registered as namespaced tool names like `mcp__<server-name>__<tool-name>`.
+- If an MCP server exposes prompts or resources, Tulkun also registers helper tools such as prompt listing and resource reading.
+- Tulkun automatically passes the current CLI workspace to MCP:
+  - for `stdio`, the child process working directory is set to the current workspace
+  - for all transports, the same workspace is sent as the MCP roots set
+
+### CodeGraph Example
+
+CodeGraph should usually be configured without a repository path override. Tulkun automatically supplies the current workspace.
+
+```yaml
+agents:
+  defaults:
+    mcp_servers:
+      - name: codegraph
+        transport: stdio
+        command: /path/to/codegraph
+        args:
+          - serve
+          - --mcp
+        inherit_parent_env: true
+```
+
+When the CodeGraph MCP server is available and Tulkun is running inside a Git workspace, Tulkun keeps `mcp__codegraph__codegraph_explore` visible in the default tool list so the model can use it directly.
 
 ## `agents.defaults.tool_classifier`
 

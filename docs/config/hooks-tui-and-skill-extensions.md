@@ -92,29 +92,18 @@ Use `allowed_env_vars` aggressively:
 
 ## `tui`
 
-`tui` configures terminal-only integrations and shell behavior.
+`tui` configures terminal-only LSP integrations and shell behavior.
+It does not define MCP servers.
 
 ### TUI Reference
 
 | Field | Type | Default | Usage |
 | --- | --- | --- | --- |
 | `tui.resume_history_turns` | integer | `50` | Number of turns the TUI keeps available for resume history behavior. |
-| `tui.mcp_servers` | object map | empty | TUI-only MCP server registry. |
 | `tui.lsp` | object map | empty | TUI-only language server registry. |
 | `tui.shell.path` | string | empty | Shell executable used by the TUI. |
 | `tui.shell.args` | string[] | empty | Shell arguments. |
 | `tui.context_paths` | string[] | empty | Extra context roots visible to the TUI. |
-
-### `tui.mcp_servers.<name>`
-
-| Field | Type | Default | Usage |
-| --- | --- | --- | --- |
-| `command` | string | empty | Launcher command for stdio-style MCP servers. |
-| `env` | string[] | empty | Environment entries for the launched MCP process. |
-| `args` | string[] | empty | Launcher arguments. |
-| `type` | string | empty | Transport type such as `stdio`. |
-| `url` | string | empty | URL for non-stdio transports. |
-| `headers` | object | empty | Headers for network transports. |
 
 ### `tui.lsp.<language>`
 
@@ -127,8 +116,8 @@ Use `allowed_env_vars` aggressively:
 
 Use the `tui` block when:
 
-- you want terminal-only integrations that should not affect gateway behavior
-- you want different MCP or LSP settings in the local terminal than in service mode
+- you want terminal-only LSP integrations that should not affect gateway behavior
+- you want different LSP settings in the local terminal than in service mode
 
 ## `skills`
 
