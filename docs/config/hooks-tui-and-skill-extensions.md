@@ -157,6 +157,38 @@ Usage guidance:
 - use `path` only for `sqlite`
 - use `host` / `port` / `database` for networked engines
 
+## `skills.github-issue-autofix`
+
+The built-in `github-issue-autofix` skill reads its scheduled repository repair
+configuration from `skills.github-issue-autofix`.
+
+### `skills.github-issue-autofix`
+
+| Field | Type | Default | Usage |
+| --- | --- | --- | --- |
+| `max_parallel_repositories` | integer | `4` | Maximum repositories processed concurrently in one cron run. |
+| `branch_prefix` | string | `autofix/issue-` | Prefix for generated autofix branch names. |
+| `repositories` | list | empty | Repository-specific issue repair targets. |
+
+### `skills.github-issue-autofix.repositories[]`
+
+| Field | Type | Default | Usage |
+| --- | --- | --- | --- |
+| `repo` | string | empty | Target GitHub repository in `owner/repo` form. |
+| `label` | string | `auto-fix` | Required issue label for selection. |
+| `base` | string | `main` | Base branch for worktrees and pull requests. |
+| `max_issues` | integer | `1` | Maximum new issues selected for this repository per run. |
+| `worktree_root` | string | `$TULKUN_HOME/workspace/github-issue-autofix/<repo-slug>` | Repository workspace root for source checkout, worktrees, and artifacts. |
+| `tracking_state_dir` | string | `<worktree_root>/state` | State directory for follow-up high-water marks. |
+| `source_dir` | string | empty | Optional existing source checkout used for worktree creation. |
+| `fork_before_pr` | boolean | `true` | Fork before pushing repair branches. |
+| `fork_remote` | string | `tulkun-autofix-fork` | Local git remote name for the fork. |
+| `fork_owner` | string | authenticated account | Optional explicit fork owner. |
+| `track_followups` | boolean | `true` | Process existing issue and PR follow-ups before selecting new issues. |
+| `reply_to_issue_comments` | boolean | `true` | Reply to issue comments when Tulkun is expected to respond. |
+| `reply_to_pr_comments` | boolean | `true` | Reply to PR comments when Tulkun is expected to respond. |
+| `reply_to_review_threads` | boolean | `true` | Reply to unresolved review threads when Tulkun is expected to respond. |
+
 ## Related
 
 - [Runtime, Gateway, And Channels](/config/runtime-gateway-and-channels)

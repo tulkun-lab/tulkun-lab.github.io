@@ -25,57 +25,59 @@ Tulkun does not merge pull requests. A maintainer still reviews and merges.
 
 ## Configuration File
 
-`github-issue-autofix` is configured only through a YAML file at this
-conventional path:
+`github-issue-autofix` is configured in the standard Tulkun config file:
 
 ```text
-$TULKUN_HOME/cron/github-issue-autofix.yaml
+$TULKUN_HOME/tulkun.yaml
 ```
 
 If `TULKUN_HOME` is not set, the path is:
 
 ```text
-$HOME/.tulkun/cron/github-issue-autofix.yaml
+$HOME/.tulkun/tulkun.yaml
 ```
 
-The skill reads this file at runtime on every scheduled run. There is no config
-path argument and no `tulkun cron github-issue-autofix` command. Put the YAML
-file at the conventional path for the workflow to take effect.
+The skill reads `skills.github-issue-autofix` from this file at runtime on every
+scheduled run. There is no config path argument and no `tulkun cron
+github-issue-autofix` command.
 
 ## Example Config
 
-Each repository is configured separately under `repositories`:
+Each repository is configured separately under
+`skills.github-issue-autofix.repositories`:
 
 ```yaml
-max_parallel_repositories: 2
-branch_prefix: autofix/issue-
+skills:
+  github-issue-autofix:
+    max_parallel_repositories: 2
+    branch_prefix: autofix/issue-
 
-repositories:
-  - repo: tulkun-lab/tulkun
-    label: auto-fix
-    base: main
-    max_issues: 1
-    worktree_root: $TULKUN_HOME/workspace/github-issue-autofix/tulkun-lab-tulkun
-    tracking_state_dir: $TULKUN_HOME/workspace/github-issue-autofix/tulkun-lab-tulkun/state
-    fork_before_pr: true
-    fork_remote: tulkun-autofix-fork
-    track_followups: true
-    reply_to_issue_comments: true
-    reply_to_pr_comments: true
-    reply_to_review_threads: true
+    repositories:
+      - repo: tulkun-lab/tulkun
+        label: auto-fix
+        base: main
+        max_issues: 1
+        worktree_root: $TULKUN_HOME/workspace/github-issue-autofix/tulkun-lab-tulkun
+        tracking_state_dir: $TULKUN_HOME/workspace/github-issue-autofix/tulkun-lab-tulkun/state
+        fork_before_pr: true
+        fork_remote: tulkun-autofix-fork
+        track_followups: true
+        reply_to_issue_comments: true
+        reply_to_pr_comments: true
+        reply_to_review_threads: true
 
-  - repo: example/api
-    label: auto-fix
-    base: main
-    max_issues: 1
-    worktree_root: $TULKUN_HOME/workspace/github-issue-autofix/example-api
-    tracking_state_dir: $TULKUN_HOME/workspace/github-issue-autofix/example-api/state
-    fork_before_pr: true
-    fork_remote: tulkun-autofix-fork
-    track_followups: true
-    reply_to_issue_comments: true
-    reply_to_pr_comments: true
-    reply_to_review_threads: true
+      - repo: example/api
+        label: auto-fix
+        base: main
+        max_issues: 1
+        worktree_root: $TULKUN_HOME/workspace/github-issue-autofix/example-api
+        tracking_state_dir: $TULKUN_HOME/workspace/github-issue-autofix/example-api/state
+        fork_before_pr: true
+        fork_remote: tulkun-autofix-fork
+        track_followups: true
+        reply_to_issue_comments: true
+        reply_to_pr_comments: true
+        reply_to_review_threads: true
 ```
 
 Unknown YAML keys are ignored.
@@ -131,7 +133,8 @@ tulkun cron run <job-id>
 
 ## Update Or Delete
 
-Update the YAML file directly to change repositories or repository parameters.
+Update `skills.github-issue-autofix` in `tulkun.yaml` directly to change
+repositories or repository parameters.
 The next scheduled run reads the current file from the conventional path.
 
 Use the generic cron commands to update or delete the scheduled job:
@@ -175,8 +178,8 @@ On each run, the skill:
 
 1. bootstraps required host dependencies through
    `scripts/bootstrap-deps.sh`
-2. loads `$TULKUN_HOME/cron/github-issue-autofix.yaml` through
-   `scripts/load-config.py`
+2. loads `skills.github-issue-autofix` from `$TULKUN_HOME/tulkun.yaml`
+   through `scripts/load-config.py`
 3. checks `gh auth status`
 4. processes follow-up comments, PR comments, reviews, and review threads before
    selecting new issues
@@ -196,8 +199,8 @@ The run ends with a machine-readable `GITHUB_ISSUE_AUTOFIX_RESULT_JSON` line.
 
 If the job fails before selecting issues, check:
 
-- the YAML file exists at `$TULKUN_HOME/cron/github-issue-autofix.yaml`
-- `repositories` is a non-empty YAML list
+- the YAML file exists at `$TULKUN_HOME/tulkun.yaml`
+- `skills.github-issue-autofix.repositories` is a non-empty YAML list
 - each `repo` uses `owner/repo`
 - `gh auth status` succeeds
 - the authenticated GitHub account can read each target repository

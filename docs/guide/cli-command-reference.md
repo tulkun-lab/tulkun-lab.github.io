@@ -158,8 +158,8 @@ Use it when Tulkun should periodically inspect labeled GitHub issues, repair
 them in isolated worktrees, fork before pushing, create pull requests, and keep
 following later issue or PR comments. See
 [GitHub Issue Autofix](/guide/github-issue-autofix) for the full setup and
-configuration file reference. The YAML config must be placed at
-`$TULKUN_HOME/cron/github-issue-autofix.yaml`.
+configuration reference. The workflow config lives under
+`skills.github-issue-autofix` in `$TULKUN_HOME/tulkun.yaml`.
 
 ### Other advanced command families
 

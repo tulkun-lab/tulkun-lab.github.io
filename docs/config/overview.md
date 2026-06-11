@@ -86,7 +86,8 @@ Use the following split when editing the config.
   personality selection.
 - [Hooks, TUI, And Skill Extensions](/config/hooks-tui-and-skill-extensions)
   Covers lifecycle hooks, TUI-specific integrations, TUI shell settings, and
-  skill-specific extension configuration such as `skills.database-query`.
+  skill-specific extension configuration such as `skills.database-query` and
+  `skills.github-issue-autofix`.
 
 ## What This Reference Covers
 
