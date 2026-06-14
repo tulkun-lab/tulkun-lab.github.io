@@ -8,7 +8,7 @@ This page explains the roles, boundaries, and interactions of:
 - retrieval-oriented search memory
 - Active Memory
 - session memory
-- memory governance and flush behavior
+- memory governance
 - Core Memory and dreaming flags
 
 ## Why Tulkun Splits Memory Into Multiple Systems
@@ -31,7 +31,7 @@ flowchart TB
     A --> C["Active Memory recall query"]
     D["Indexed memory and search roots"] --> E["Search memory"]
     E --> C
-    A --> F["Memory governance and flush paths"]
+    A --> F["Memory governance paths"]
     F --> G["Durable memory artifacts"]
     H["Core Memory flags"] --> F
 ```
@@ -207,23 +207,6 @@ such as:
 The governance layer matters because not all memory transitions should happen
 inline during the user-facing turn.
 
-## Memory Flush
-
-Memory flush is a related but distinct mechanism.
-
-It matters when history is truncated or compacted and Tulkun needs to leave a
-bounded continuity trail.
-
-The flush configuration controls:
-
-- whether flush markers are used
-- whether markdown excerpts are written
-- per-turn excerpt size
-- daily excerpt volume caps
-
-This gives Tulkun a controlled way to preserve compact continuity notes even
-when the full transcript is no longer ideal to replay.
-
 ## Core Memory And Dreaming
 
 Tulkun exposes a `memory.core` block and a documented dreaming state.
@@ -244,7 +227,7 @@ The layers are most useful when understood as a pipeline rather than as a list.
 - search memory makes information discoverable
 - Active Memory decides what is worth recalling into the current turn
 - session memory keeps current continuity compressed
-- governance and flush paths maintain longer-lived structure around those artifacts
+- governance paths maintain longer-lived structure around those artifacts
 
 That interaction is what lets Tulkun sustain longer sessions without depending
 on raw transcript replay alone.
@@ -253,7 +236,7 @@ on raw transcript replay alone.
 
 If you are configuring behavior:
 
-- use `/config/agents-and-models` for search memory, governance, and flush settings
+- use `/config/agents-and-models` for search memory and governance settings
 - use `/config/memory-and-runtime-features` for Active Memory and Core Memory flags
 
 If you are reasoning about continuity:

@@ -152,17 +152,6 @@ Use this block when:
 - you need external embedding infrastructure
 - you need vector-backed search rather than fallback-only retrieval
 
-## `agents.defaults.chat_history`
-
-Controls recent transcript injection into prompts.
-
-| Field | Type | Default | Usage |
-| --- | --- | --- | --- |
-| `enabled` | boolean | `true` | Enables chat-history injection. |
-| `max_turns` | integer | `40` | Maximum turns preserved for injection. |
-| `max_chars_per_message` | integer | `12000` | Per-message truncation cap. |
-| `max_injected_chars` | integer | `48000` | Total injected history cap. |
-
 ## `agents.defaults.memory_govern`
 
 Controls scheduled memory governance behavior.
@@ -176,17 +165,6 @@ Controls scheduled memory governance behavior.
 | `promote_dry_run` | boolean | `true` | Keeps promotion in dry-run mode unless changed. |
 | `rem_apply` | boolean | disabled unless configured | Allows REM apply phase to mutate state. |
 | `debounce_assistant_sec` | integer | `0` unless set | Debounce before governance reacts to assistant output. |
-
-## `agents.defaults.memory_flush`
-
-Controls flush-marker behavior when history is truncated.
-
-| Field | Type | Default | Usage |
-| --- | --- | --- | --- |
-| `enabled` | boolean | disabled unless configured | Enables flush markers. |
-| `write_markdown_excerpt` | boolean | disabled unless configured | Writes markdown excerpts during flush. |
-| `max_markdown_chars_per_day` | integer | `96000` | Daily markdown excerpt cap. |
-| `max_compact_chars_per_turn` | integer | `800` | Per-turn compact excerpt cap. |
 
 ## `agents.defaults.evolution_proposals`
 
@@ -251,7 +229,6 @@ Controls what context sources are injected and how large they can become.
 | `workspace_bootstrap_md` | boolean | `true` | Includes workspace bootstrap guidance. |
 | `workspace_rules_pre_hook` | boolean | `true` | Injects workspace rules in pre-hook context. |
 | `context_engine_rules_source` | boolean | effective `false` when `workspace_rules_pre_hook` is on | Includes rules through the context engine source path. |
-| `context_engine_history_source` | boolean | effective `false` when chat-history injection is enabled | Includes transcript history through context engine source path. |
 | `active_memory_pre_hook` | boolean | `true` | Injects Active Memory in pre-hook context. |
 | `skills_level0_source` | boolean | `true` | Exposes level-0 skills as a context source. |
 | `workspace_rules_chain` | boolean | `true` | Enables workspace rules chaining. |

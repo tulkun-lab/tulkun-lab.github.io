@@ -26,7 +26,7 @@ Use `phero.agent_name` when:
 
 ## `compact`
 
-`compact` controls session-history compaction behavior.
+`compact` controls structured transcript compaction behavior.
 
 | Field | Type | Default | Usage |
 | --- | --- | --- | --- |
@@ -46,7 +46,7 @@ Use it when:
 The top-level `memory` block covers Active Memory and Core Memory.
 
 It is separate from `agents.defaults.memory_*`, which controls memory-related
-runtime policy such as search, governance, and flush behavior.
+runtime policy such as search and governance.
 
 ### `memory.active`
 
