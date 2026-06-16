@@ -84,9 +84,7 @@ Representative commands include:
 - `/tasks`
 - `/board`
 - `/plan`
-- `/todo`
 - `/agent`
-- `/side`
 - `/sandbox`
 - `/ps`
 - `/stop`
