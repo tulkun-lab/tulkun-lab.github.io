@@ -7,6 +7,7 @@ defines:
 
 - which agents exist
 - which models they use
+- which agents are primary workspaces
 - how memory, planning, guardrails, and advanced runtime defaults behave
 
 ## `agents`
@@ -18,27 +19,72 @@ defines:
 
 ## `agents.definitions`
 
-Each entry under `agents.definitions` is one named agent.
+Each entry under `agents.definitions` is one named agent. `main` is always a
+primary agent. Other user-defined entries become primary agents only when
+`primary: true` is set; entries without `primary` or with `primary: false` are
+subagent definitions.
 
 If `main` is omitted, Tulkun creates it automatically with:
 
-- `role: Tulkun assistant`
-- `goal: Help the user using workspace context and skills`
-- `backstory: You are a careful, tool-using agent.`
+- `workspace: workspace`
 - `max_iterations: 90`
 - one empty `llm_providers` entry
+
+Example:
+
+```yaml
+agents:
+  definitions:
+    main:
+      workspace: workspace
+      llm_providers:
+        - provider: openai
+          model: gpt-5
+    review:
+      primary: true
+      workspace: workspaces/review
+      llm_providers:
+        - provider: openai
+          model: gpt-5
+    verification:
+      primary: false
+      llm_providers:
+        - provider: openai
+          model: gpt-5
+```
 
 ### Agent Definition Reference
 
 | Field | Type | Default | Usage |
 | --- | --- | --- | --- |
-| `agents.definitions.<name>.role` | string | empty, except auto-created `main` | Short role description. |
-| `agents.definitions.<name>.goal` | string | empty, except auto-created `main` | Main operating goal. |
-| `agents.definitions.<name>.backstory` | string | empty, except auto-created `main` | Additional role framing for prompts. |
+| `agents.definitions.<name>.primary` | boolean | `false`, except `main` is always primary | Marks a user-defined agent as a primary workspace. Ignored for `main` and built-in subagent types. |
+| `agents.definitions.<name>.workspace` | string | `workspace` for `main`; `workspaces/<name>` for other primary agents | Workspace root for a primary agent. Relative paths resolve under Tulkun home. Subagent definitions inherit the parent primary workspace and should not set this field. |
 | `agents.definitions.<name>.max_iterations` | integer | `90` if omitted or invalid | Maximum iterations for the agent run loop. |
 | `agents.definitions.<name>.llm_providers` | object[] | at least one empty entry for `main` | Provider chain used by the agent. |
 | `agents.definitions.<name>.loop_guard` | object | disabled unless configured | Loop-guard behavior for the agent. |
 | `agents.definitions.<name>.heartbeat` | object | inherited from `agents.defaults.heartbeat` | Per-agent heartbeat override. |
+
+`role`, `goal`, and `backstory` are not supported configuration keys. They do
+not affect Tulkun's runtime prompt path.
+
+### Primary Workspace Layout
+
+Each primary agent owns an isolated workspace and private runtime roots:
+
+| Path | Meaning |
+| --- | --- |
+| `<home>/workspace` | Default `main` primary workspace. |
+| `<home>/workspaces/<id>` | Default workspace for a non-main primary agent when `workspace` is omitted. |
+| `<primary-workspace>/MEMORY.md` | Primary-agent private entry memory. |
+| `<primary-workspace>/memory` | Primary-agent private durable memory. |
+| `<primary-workspace>/state/session-memory` | Primary-agent private session memory. |
+| `<primary-workspace>/skills` | Primary-agent private workspace skills. |
+| `<home>/memory/shared` | Shared memory visible to all primary agents. |
+| `<home>/skills` | Shared skills visible to all primary agents. |
+
+The active primary agent is selected through the Web top-nav dropdown, the Web
+`/agents` page, or the Stream `/agent` picker. Tulkun stores that runtime
+selection in `<home>/state/primary-agent.json`.
 
 ### How To Use Named Agents
 
@@ -46,7 +92,8 @@ Use named agents when:
 
 - different tasks require different models
 - one agent should be review-focused while another is implementation-focused
-- background or delegated work should use a different role definition
+- you want separate primary workspaces, memory, skills, active runs, and child
+  subagents
 
 Avoid creating many weakly differentiated agents. The best named agents have a
 clear operating purpose.

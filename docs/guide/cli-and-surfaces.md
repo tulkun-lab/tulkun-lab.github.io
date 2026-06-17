@@ -78,20 +78,34 @@ Representative commands include:
 
 - `/model`
 - `/permissions`
-- `/memories`
+- `/memory-review`
 - `/skills`
 - `/compact`
-- `/tasks`
-- `/board`
 - `/plan`
 - `/agent`
+- `/subagents`
 - `/sandbox`
-- `/ps`
-- `/stop`
+
+`/agent` is a picker-only primary-agent selector. It opens the configured
+primary-agent list, marks the active primary agent, and switches subsequent
+agent-owned memory, skills, runs, and subagents to the selected primary.
+
+`/subagents` is a picker-only child subagent and session selector. It focuses
+the current primary row or one of its child subagent sessions.
+
+`/board` is intentionally not a terminal command. Workboard creation starts in
+WebChat or a supported Gateway channel through `/board`, then Tulkun returns a
+link to the `/boards` management page.
 
 The important point is not the exact list. The important point is that slash
 commands are part of Tulkun's product language across surfaces, not a terminal
 hack layered on top.
+
+## Primary Agent Web Surfaces
+
+The Web UI includes a top-nav primary-agent dropdown backed by the same active
+primary-agent state as `/agent`. The `/agents` page shows primary workspaces,
+live primary and subagent rows, and cancellation controls.
 
 ## Surface Relationship
 
