@@ -449,4 +449,4 @@ That means operators should currently think of telemetry as:
 - [Getting Started](/guide/getting-started)
 - [CLI and Surfaces](/guide/cli-and-surfaces)
 - [Runtime, Gateway, And Channels](/config/runtime-gateway-and-channels)
-- [Hooks, TUI, And Skill Extensions](/config/hooks-tui-and-skill-extensions)
+- [Hooks And Skill Extensions](/config/hooks-and-skill-extensions)

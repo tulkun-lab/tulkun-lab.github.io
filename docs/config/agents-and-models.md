@@ -26,7 +26,6 @@ subagent definitions.
 
 If `main` is omitted, Tulkun creates it automatically with:
 
-- `workspace: workspace`
 - `max_iterations: 90`
 - one empty `llm_providers` entry
 
@@ -36,13 +35,11 @@ Example:
 agents:
   definitions:
     main:
-      workspace: workspace
       llm_providers:
         - provider: openai
           model: gpt-5
     review:
       primary: true
-      workspace: workspaces/review
       llm_providers:
         - provider: openai
           model: gpt-5
@@ -58,7 +55,6 @@ agents:
 | Field | Type | Default | Usage |
 | --- | --- | --- | --- |
 | `agents.definitions.<name>.primary` | boolean | `false`, except `main` is always primary | Marks a user-defined agent as a primary workspace. Ignored for `main` and built-in subagent types. |
-| `agents.definitions.<name>.workspace` | string | `workspace` for `main`; `workspaces/<name>` for other primary agents | Workspace root for a primary agent. Relative paths resolve under Tulkun home. Subagent definitions inherit the parent primary workspace and should not set this field. |
 | `agents.definitions.<name>.max_iterations` | integer | `90` if omitted or invalid | Maximum iterations for the agent run loop. |
 | `agents.definitions.<name>.llm_providers` | object[] | at least one empty entry for `main` | Provider chain used by the agent. |
 | `agents.definitions.<name>.loop_guard` | object | disabled unless configured | Loop-guard behavior for the agent. |
@@ -69,12 +65,13 @@ not affect Tulkun's runtime prompt path.
 
 ### Primary Workspace Layout
 
-Each primary agent owns an isolated workspace and private runtime roots:
+Each primary agent owns an isolated workspace and private runtime roots. The
+workspace location is fixed by Tulkun and is not user-configurable:
 
 | Path | Meaning |
 | --- | --- |
-| `<home>/workspace` | Default `main` primary workspace. |
-| `<home>/workspaces/<id>` | Default workspace for a non-main primary agent when `workspace` is omitted. |
+| `<home>/workspace` | `main` primary workspace. |
+| `<home>/workspaces/<id>` | Workspace for a non-main primary agent. |
 | `<primary-workspace>/MEMORY.md` | Primary-agent private entry memory. |
 | `<primary-workspace>/memory` | Primary-agent private durable memory. |
 | `<primary-workspace>/state/session-memory` | Primary-agent private session memory. |
@@ -231,9 +228,7 @@ Controls proposal drafting from repeated tool failures.
 
 | Field | Type | Default | Usage |
 | --- | --- | --- | --- |
-| `sources` | string[] | empty | Dataset source scopes. |
 | `max_rows_per_run` | integer | `5000` | Export row limit per run. |
-| `redact_pii` | boolean | `true` | Redacts PII in exported rows. |
 
 ## `agents.defaults.evolution_post_turn`
 
@@ -241,7 +236,6 @@ Controls proposal drafting from repeated tool failures.
 | --- | --- | --- | --- |
 | `enabled` | boolean | disabled unless configured | Enables post-turn evolution analysis. |
 | `system_prompt_path` | string | empty | Prompt file for post-turn analysis. |
-| `max_out_tokens` | integer | `1024` | Max output tokens for the post-turn run. |
 | `budget_runs_per_hour` | integer | `8` | Hourly budget for post-turn runs. |
 
 ## `agents.defaults.evolution_strategy`
@@ -250,19 +244,11 @@ Controls proposal drafting from repeated tool failures.
 | --- | --- | --- | --- |
 | `evolution_strategy` | string | `balanced` | Strategy label for proposal and promotion behavior. |
 
-## `agents.defaults.skill_edit`
-
-| Field | Type | Default | Usage |
-| --- | --- | --- | --- |
-| `max_skill_runes` | integer | `120000` | Maximum accepted skill source size. |
-| `max_patch_runes` | integer | `8000` | Maximum accepted patch size for skill-edit flows. |
-
 ## `agents.defaults.promote_gate`
 
 | Field | Type | Default | Usage |
 | --- | --- | --- | --- |
 | `smoke_script_rel` | string | `scripts/evolution_smoke.sh` effective helper default | Relative or absolute smoke script. |
-| `golden_dir_rel` | string | `workspace/evolution/golden` effective helper default | Relative or absolute golden directory. |
 | `require_smoke_pass` | boolean | `false` | Requires smoke pass before promote. |
 | `backup_on_promote` | boolean | `true` | Keeps backup artifacts on promote. |
 | `dedupe_cooldown_hours` | integer | `6` | Proposal dedupe cooldown. |
@@ -285,15 +271,6 @@ Controls what context sources are injected and how large they can become.
 | `max_active_memory_summary_chars` | integer | plugin-specific fallback | Active Memory summary cap. |
 | `model_context_tokens` | integer | unset unless configured | Explicit model context window. |
 | `warn_remaining_tokens` | integer | `8000` | Remaining-token warning threshold. |
-
-## `agents.defaults.planner`
-
-| Field | Type | Default | Usage |
-| --- | --- | --- | --- |
-| `enabled` | boolean | `true` | Enables planner behavior. |
-| `max_steps` | integer | `5` | Maximum planner steps. |
-| `emit_default_plan` | boolean | `false` | Emits a default plan automatically. |
-| `prefer_execute_in_agent_mode` | boolean | `true` | Prefers execution in agent mode. |
 
 ## `agents.defaults.mcp_servers`
 
@@ -377,29 +354,17 @@ When the CodeGraph MCP server is available and Tulkun is running inside a Git wo
 
 | Field | Type | Default | Usage |
 | --- | --- | --- | --- |
-| `profile` | string | `strict` | Guardrails profile label. |
-| `prompt.delimiter_enabled` | boolean | `true` | Enables prompt delimiter wrapping. |
 | `prompt.delimiter_begin` | string | empty | Delimiter start marker. |
 | `prompt.delimiter_end` | string | empty | Delimiter end marker. |
-| `prompt.sandwich_enabled` | boolean | `true` | Enables sandwich-style reminder tail. |
 | `prompt.sandwich_tail` | string | empty | Sandwich tail text. |
 | `input.rules_enabled` | boolean | `true` | Enables input-side rules checks. |
 | `input.max_runes` | integer | `200000` | Input size limit. |
 | `input.block_substrings` | string[] | empty | Hard-block substrings. |
-| `input.policy_enforcer.enabled` | boolean | `false` | Enables model-assisted input policy enforcement. |
-| `input.policy_enforcer.provider` | string | empty | Provider for policy enforcement. |
-| `input.policy_enforcer.model` | string | empty | Model for policy enforcement. |
-| `input.policy_enforcer.api_key_env` | string | empty | API key env name. |
-| `input.policy_enforcer.timeout_seconds` | integer | `0` unless set | Enforcement timeout. |
+| `input.policy_enforcer.enabled` | boolean | `false` | Enables model-assisted input policy enforcement. The gate's LLM provider comes from `agents.definitions["policy-enforcer"].llm_providers` (falling back to the `main` agent's providers). |
+| `input.policy_enforcer.timeout_seconds` | integer | `45` | Enforcement timeout. |
 | `output.heuristic_enabled` | boolean | `true` | Enables heuristic output checks. |
 | `retrieval.baseline_enabled` | boolean | `true` | Enables retrieval-side baseline checks. |
 | `retrieval.max_chunk_runes` | integer | `120000` | Retrieval chunk cap. |
-| `http_sidecars_required` | boolean | `false` | Requires all configured sidecars to be available. |
-| `http_sidecars` | object[] | empty | HTTP moderation or policy sidecars. |
-| `external_moderation.enabled` | boolean | `true` | Enables external moderation endpoint calls. |
-| `external_moderation.base_url` | string | empty | Moderation base URL. |
-| `external_moderation.path` | string | empty | Moderation API path. |
-| `external_moderation.timeout_seconds` | integer | `0` unless set | Moderation timeout. |
 
 ## `agents.defaults.heartbeat`
 
@@ -423,7 +388,6 @@ When the CodeGraph MCP server is available and Tulkun is running inside a Git wo
 | --- | --- | --- | --- |
 | `encoding` | string | empty; runtime falls back to active model or `cl100k_base` | Explicit tokenizer encoding. |
 | `model` | string | empty | Model used for token-estimation heuristics. |
-| `fallback_rune_div4` | boolean | `true` | Allows rune/4 fallback when tokenizer initialization fails. |
 
 ## `agents.defaults.web_search`
 
@@ -454,4 +418,4 @@ Accepted provider values:
 
 - [Memory, Compaction, And Runtime Features](/config/memory-and-runtime-features)
 - [Sandbox And Permissions](/config/sandbox-and-permissions)
-- [Subagents and Workboards](/guide/subagents-and-workboards)
+- [Subagents](/guide/subagents)

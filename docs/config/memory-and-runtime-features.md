@@ -8,7 +8,6 @@ Use this page for:
 - Active Memory configuration
 - Core Memory and dreaming flags
 - automatic compaction
-- MagicDocs
 - phero bootstrap selection
 
 ## `phero`
@@ -147,30 +146,8 @@ Important note:
 - consolidation work is surfaced through memory tooling and governance flows
 - if `frequency` is omitted, the status surface reports `manual`
 
-## `magicdocs`
-
-MagicDocs controls Tulkun's marked-document update behavior.
-
-| Field | Type | Default | Usage |
-| --- | --- | --- | --- |
-| `magicdocs.enabled` | boolean | `true` | Enables MagicDocs runtime behavior. |
-
-What it controls:
-
-- tracking of marked documents read during runtime
-- background update attempts for documents explicitly marked as Magic Docs
-
-What counts as a Magic Doc:
-
-- a document with a `# MAGIC DOC:` header
-
-When it matters:
-
-- you want Tulkun to keep selected operational documents current as work progresses
-- you want to disable that behavior entirely
-
 ## Related
 
 - [Agents And Models](/config/agents-and-models)
-- [Hooks, TUI, And Skill Extensions](/config/hooks-tui-and-skill-extensions)
+- [Hooks And Skill Extensions](/config/hooks-and-skill-extensions)
 - [Memory Systems](/guide/memory-systems)

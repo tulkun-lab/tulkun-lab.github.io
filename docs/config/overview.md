@@ -64,7 +64,6 @@ Some fields are populated automatically when omitted. For example:
 - `gateway.http_addr` defaults to `127.0.0.1:6060`
 - `gateway.auth.mode` defaults to `token`
 - `compact.auto` defaults to `true`
-- `magicdocs.enabled` defaults to `true`
 
 Every reference page below calls out effective runtime defaults explicitly.
 
@@ -82,12 +81,11 @@ Use the following split when editing the config.
   Covers sandbox execution policy, filesystem and network restrictions, and
   dangerous fallback controls.
 - [Memory, Compaction, And Runtime Features](/config/memory-and-runtime-features)
-  Covers Active Memory, Core Memory, dreaming flags, compaction, MagicDocs, and
+  Covers Active Memory, Core Memory, dreaming flags, compaction, and
   personality selection.
-- [Hooks, TUI, And Skill Extensions](/config/hooks-tui-and-skill-extensions)
-  Covers lifecycle hooks, TUI-specific integrations, TUI shell settings, and
-  skill-specific extension configuration such as `skills.database-query` and
-  `skills.github-issue-autofix`.
+- [Hooks And Skill Extensions](/config/hooks-and-skill-extensions)
+  Covers lifecycle hooks and skill-specific extension configuration such as
+  `skills.database-query` and `skills.github-issue-autofix`.
 
 ## What This Reference Covers
 
@@ -107,7 +105,6 @@ This section does not explain the deeper system design for:
 - session compaction strategy
 - memory consolidation
 - subagent coordination
-- workboard execution semantics
 - safety layering
 
 Those topics are documented under `/guide`.
@@ -120,7 +117,7 @@ If you are configuring Tulkun for the first time, read in this order:
 2. [Agents And Models](/config/agents-and-models)
 3. [Sandbox And Permissions](/config/sandbox-and-permissions)
 4. [Memory, Compaction, And Runtime Features](/config/memory-and-runtime-features)
-5. [Hooks, TUI, And Skill Extensions](/config/hooks-tui-and-skill-extensions)
+5. [Hooks And Skill Extensions](/config/hooks-and-skill-extensions)
 
 ## Related
 

@@ -4,7 +4,7 @@ layout: home
 hero:
   name: "Tulkun"
   text: "The terminal AI work agent that also runs as an agent gateway"
-  tagline: "An open-source agent product for developers and everyday productivity users who want terminal work, service-backed gateway APIs, multi-channel integrations, memory, skills, subagents, workboards, and execution controls in one runtime."
+  tagline: "An open-source agent product for developers and everyday productivity users who want terminal work, service-backed gateway APIs, multi-channel integrations, memory, skills, subagents, and execution controls in one runtime."
   image:
     src: /mark.svg
     alt: Tulkun mark
@@ -23,15 +23,15 @@ features:
   - title: Terminal-First Coding Agent
     details: "Tulkun's interactive TUI is built for local development work: live sessions, slash commands, approvals, visible tool progress, session resume, local workspace access, and shell-oriented execution."
   - title: Gateway Runtime, Not A Sidecar
-    details: "The same runtime is exposed through the Tulkun gateway with HTTP APIs, WebSocket chat, run events, sessions, files, permissions, skills, memory, workboards, and channel delivery."
+    details: "The same runtime is exposed through the Tulkun gateway with HTTP APIs, WebSocket chat, run events, sessions, files, permissions, skills, memory, and channel delivery."
   - title: Multi-Channel Agent Gateway
     details: "Tulkun registers adapters for platforms such as Telegram, Discord, Slack, WhatsApp, WeCom, Weixin, Feishu, DingTalk, QQ, Signal, Matrix, Mattermost, email, SMS, webhooks, and more."
   - title: Office Productivity Agent
     details: "Tulkun's gateway and channel surfaces can support daily productivity workflows such as document-heavy tasks, knowledge recall, recurring automation, approvals, and team communication."
   - title: Stateful Work Beyond Chat
-    details: "Sessions, runs, context budgets, compaction, Active Memory, session memory, daily memory, MagicDocs, subagents, and workboards give Tulkun durable structure for long-running development and office work."
+    details: "Sessions, runs, context budgets, compaction, Active Memory, session memory, daily memory, and subagents give Tulkun durable structure for long-running development and office work."
   - title: Built-In Delegation And Coordination
-    details: "Coordinator mode, subagent tools, fanout execution, child run tracking, workboard nodes, attempts, artifacts, and review states are part of the product model rather than loose prompts."
+    details: "Coordinator mode, subagent tools, fanout execution, and child run tracking are part of the product model rather than loose prompts."
   - title: Safety As A Product Surface
     details: "Tulkun separates permissions, approvals, sandboxing, guardrails, path controls, and audit surfaces so powerful agents stay observable and controllable."
 ---
@@ -51,7 +51,7 @@ surfaces access to the same core runtime concepts:
 - an interactive terminal experience for development and power-user work
 - a service surface for gateway, web-backed, and channel-backed use cases
 - configurable agent, model, and memory behavior
-- structured task coordination through workboards and subagents
+- structured task coordination through subagents
 - layered safety controls around permissions and execution
 
 ## Why Tulkun Is Different
@@ -65,7 +65,7 @@ or communication-heavy work.
 Compared with a typical terminal coding agent, Tulkun is not limited to one
 interactive shell session. The gateway exposes the same runtime through
 service-backed sessions, WebSocket chat, REST APIs, run events, file APIs,
-permissions APIs, skills management, workboards, and channel delivery.
+permissions APIs, skills management, and channel delivery.
 
 Compared with a typical gateway, Tulkun is not just a pass-through bot router.
 Inbound channel messages enter an agent runtime with session state, tool
@@ -101,8 +101,7 @@ delivery.
 
 Tulkun tracks sessions and runs instead of treating every request as an isolated
 prompt. That state is visible through chat history, run events, subagent
-history, context diagnostics, tool audit records, cost summaries, workboards,
-and task attempts.
+history, context diagnostics, tool audit records, and cost summaries.
 
 ### Memory Is Split Into Real Mechanisms
 
@@ -114,7 +113,7 @@ team process.
 
 ### Delegation Has Execution Surfaces
 
-Subagents, fanout, coordinator mode, child run tracking, and workboards give
+Subagents, fanout, coordinator mode, and child run tracking give
 Tulkun a way to handle larger tasks without burying the plan inside one chat
 transcript. That applies to implementation work, research, document processing,
 operations, review, and other multi-step office tasks.
@@ -194,14 +193,14 @@ This path answers:
 2. [Context and Compaction](/guide/context-and-compaction)
 3. [Memory Systems](/guide/memory-systems)
 4. [Skills and Tools](/guide/skills-and-tools)
-5. [Subagents and Workboards](/guide/subagents-and-workboards)
+5. [Subagents](/guide/subagents)
 6. [Safety Model](/guide/safety-model)
 
 This path answers:
 
 - How does Tulkun assemble context?
 - What kinds of memory does it maintain?
-- How do tools, skills, subagents, and workboards fit together?
+- How do tools, skills, and subagents fit together?
 - What prevents unsafe execution?
 
 ## Product Areas At A Glance
@@ -220,7 +219,7 @@ and operational APIs.
 
 ### Knowledge And Coordination
 
-Tulkun's memory stack, skill system, subagent model, and workboards exist to
+Tulkun's memory stack, skill system, and subagent model exist to
 support longer-running, more structured work instead of isolated chat answers:
 coding tasks, document-heavy office workflows, recurring operations, and team
 coordination.
@@ -252,7 +251,6 @@ flowchart TB
       H["Memory systems"]
       I["Skills and subagents"]
       J["Permissions and sandboxing"]
-      K["Workboards"]
     end
 
     A --> D
@@ -264,7 +262,6 @@ flowchart TB
     D --> H
     D --> I
     E --> J
-    F --> K
 ```
 
 ## Continue Reading

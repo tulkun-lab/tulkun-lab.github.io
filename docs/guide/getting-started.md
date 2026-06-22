@@ -13,7 +13,7 @@ Tulkun combines several capabilities in one local runtime:
 - configurable agents and model providers
 - memory features for retrieval, recall, and summarization
 - reusable skills and callable tools
-- workboards and subagents for structured execution
+- subagents for structured execution
 - permission and sandbox controls around tool execution
 
 For a new user, the main goal is to reach a valid interactive session first.
@@ -199,7 +199,7 @@ Start with the gateway workflow rather than the interactive shell workflow.
 3. [Context and Compaction](/guide/context-and-compaction)
 4. [Memory Systems](/guide/memory-systems)
 5. [Skills and Tools](/guide/skills-and-tools)
-6. [Subagents and Workboards](/guide/subagents-and-workboards)
+6. [Subagents](/guide/subagents)
 7. [Safety Model](/guide/safety-model)
 8. [GitHub Issue Autofix](/guide/github-issue-autofix)
 9. [CLI Command Reference](/guide/cli-command-reference)

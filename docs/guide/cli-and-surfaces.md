@@ -93,10 +93,6 @@ agent-owned memory, skills, runs, and subagents to the selected primary.
 `/subagents` is a picker-only child subagent and session selector. It focuses
 the current primary row or one of its child subagent sessions.
 
-`/board` is intentionally not a terminal command. Workboard creation starts in
-WebChat or a supported Gateway channel through `/board`, then Tulkun returns a
-link to the `/boards` management page.
-
 The important point is not the exact list. The important point is that slash
 commands are part of Tulkun's product language across surfaces, not a terminal
 hack layered on top.

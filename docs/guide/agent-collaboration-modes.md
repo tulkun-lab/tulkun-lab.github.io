@@ -1,7 +1,6 @@
 # Agent Collaboration Modes
 
-Tulkun collaboration is built around primary agents, child subagents, and
-Workboards.
+Tulkun collaboration is built around primary agents and child subagents.
 
 Primary agents are top-level work partitions. Each primary agent owns its
 workspace, private memory, workspace-local skills, active runs, and child
@@ -17,7 +16,6 @@ subagents. Child subagents inherit the active primary agent boundary.
 | Typed subagent | set `subagent_type` | Role-specific work with prompt and tool boundaries |
 | Fanout | `subagent_fanout` | Independent tasks that can run in parallel |
 | Async lifecycle | `subagent_send`, `subagent_wait`, `subagent_continue`, `subagent_close` | Long-running workers, status checks, and revision loops |
-| Workboard | WebChat `/board` | Task graphs, attempts, artifacts, and review state |
 
 ## Primary Agents
 
@@ -133,17 +131,6 @@ Subagent history is stored under Tulkun home at
 `state/subagent-history.jsonl`. Running async subagents also have an in-process
 registry handle for status, wait, and cancellation.
 
-## Workboards
-
-Workboards are structured task graphs. They model boards, nodes, attempts,
-artifacts, comments, and review state.
-
-Workboard creation starts in WebChat or a supported Gateway channel with
-`/board`. Tulkun clarifies in chat when needed, creates or updates the board
-through Workboard tools, and returns a link to the `/boards` management page.
-
-Terminal surfaces do not expose `/board`.
-
 ## Choosing A Pattern
 
 | Need | Recommended pattern |
@@ -154,7 +141,6 @@ Terminal surfaces do not expose `/board`.
 | Enforce role-specific behavior | Typed subagent |
 | Read several areas in parallel | `subagent_fanout` with `explore` |
 | Review and request revision from the same worker | Async lifecycle |
-| Track a larger task graph | WebChat `/board` and `/boards` |
 
 ## Implementation Map
 
@@ -166,5 +152,4 @@ Terminal surfaces do not expose `/board`.
 | `internal/codetools/subagent_tools.go` | Typed subagent visible-tool policy |
 | `internal/subagents/history.go` | Durable subagent history JSONL |
 | `internal/subagents/registry.go` | In-process running subagent registry |
-| `internal/codetools/workboard_tools.go` | Workboard tools |
 | `internal/gateway/agents_api.go` | Web primary-agent and roster APIs |

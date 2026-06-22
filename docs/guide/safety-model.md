@@ -171,7 +171,6 @@ Examples include:
 - input substring blocking
 - retrieval baseline checks
 - heuristic output checks
-- moderation sidecars
 
 ## Why Tulkun Keeps These Layers Separate
 

@@ -247,4 +247,4 @@ If you are reasoning about continuity:
 
 - [Context and Compaction](/guide/context-and-compaction)
 - [Skills and Tools](/guide/skills-and-tools)
-- [Subagents and Workboards](/guide/subagents-and-workboards)
+- [Subagents](/guide/subagents)

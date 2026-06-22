@@ -7,7 +7,7 @@ This page explains the system architecture at the product level:
 
 - which surfaces Tulkun exposes
 - which shared runtime layers those surfaces depend on
-- how core systems such as memory, tools, subagents, workboards, and safety fit together
+- how core systems such as memory, tools, subagents, and safety fit together
 
 ## Architectural Goal
 
@@ -46,7 +46,6 @@ flowchart TB
       I["Memory systems"]
       J["Skills and tool surfaces"]
       K["Subagents and coordinator mode"]
-      L["Workboards and long-run tracking"]
       M["Sandbox, permissions, and guardrails"]
     end
 
@@ -60,7 +59,6 @@ flowchart TB
     F --> I
     G --> J
     G --> K
-    D --> L
     G --> M
 ```
 
@@ -168,7 +166,6 @@ Before a turn, the runtime assembles a working context from multiple sources.
 After a turn, it may trigger maintenance work such as:
 
 - session memory refresh
-- MagicDocs updates
 - prompt suggestion generation
 - tool-use summarization
 
@@ -230,22 +227,6 @@ At a high level:
 
 This lets Tulkun scale from one-turn tasks to structured multi-step execution.
 
-### Workboards And Long-Run Tracking
-
-Tulkun includes a structured work representation for tasks that need more than a
-transcript.
-
-Workboards matter when work needs:
-
-- nodes and dependencies
-- attempts and retries
-- artifacts and evidence
-- review states
-- progress summaries
-
-This gives Tulkun a planning and execution memory that is stronger than chat
-history alone.
-
 ### Sandbox, Permissions, And Guardrails
 
 Safety in Tulkun is layered rather than monolithic.
@@ -305,5 +286,5 @@ If you are trying to understand one specific part of Tulkun, continue with:
 - [Context and Compaction](/guide/context-and-compaction) for prompt-budget management
 - [Memory Systems](/guide/memory-systems) for recall, session memory, and consolidation
 - [Skills and Tools](/guide/skills-and-tools) for capability surfaces
-- [Subagents and Workboards](/guide/subagents-and-workboards) for delegation and task structure
+- [Subagents](/guide/subagents) for delegation and task structure
 - [Safety Model](/guide/safety-model) for approvals, sandboxing, and guardrails

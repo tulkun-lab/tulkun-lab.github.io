@@ -1,15 +1,13 @@
-# Hooks, TUI, And Skill Extensions
+# Hooks And Skill Extensions
 
 This page documents:
 
 - `hooks`
-- `tui`
 - skill-specific extension config under `skills:`
 
 These are runtime-adjacent settings, but they are not the same thing.
 
 - `hooks` changes lifecycle automation
-- `tui` changes terminal-only integrations and shell behavior
 - `skills` configures individual skills that expose their own external settings
 
 ## `hooks`
@@ -89,35 +87,6 @@ Use `allowed_env_vars` aggressively:
 
 - do not forward the full parent environment by default
 - allow only the variables the hook truly needs
-
-## `tui`
-
-`tui` configures terminal-only LSP integrations and shell behavior.
-It does not define MCP servers.
-
-### TUI Reference
-
-| Field | Type | Default | Usage |
-| --- | --- | --- | --- |
-| `tui.resume_history_turns` | integer | `50` | Number of turns the TUI keeps available for resume history behavior. |
-| `tui.lsp` | object map | empty | TUI-only language server registry. |
-| `tui.shell.path` | string | empty | Shell executable used by the TUI. |
-| `tui.shell.args` | string[] | empty | Shell arguments. |
-| `tui.context_paths` | string[] | empty | Extra context roots visible to the TUI. |
-
-### `tui.lsp.<language>`
-
-| Field | Type | Default | Usage |
-| --- | --- | --- | --- |
-| `enabled` | boolean | `false` | Enables the LSP server definition. |
-| `command` | string | empty | Language server command. |
-| `args` | string[] | empty | Command arguments. |
-| `options` | object | empty | Server-specific option object. |
-
-Use the `tui` block when:
-
-- you want terminal-only LSP integrations that should not affect gateway behavior
-- you want different LSP settings in the local terminal than in service mode
 
 ## `skills`
 
