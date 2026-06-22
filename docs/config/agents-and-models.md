@@ -100,7 +100,7 @@ clear operating purpose.
 `llm_providers` is an ordered provider chain.
 
 Each entry includes provider identity, model identity, and optional runtime
-overrides.
+overrides. Runtime overrides sit at the same level as `provider` and `model`.
 
 ### Provider Entry Reference
 
@@ -108,11 +108,10 @@ overrides.
 | --- | --- | --- | --- |
 | `provider` | string | empty | Provider name such as `openai`, `anthropic`, `deepseek`, or `openrouter`. |
 | `model` | string | empty | Model identifier. |
-| `config.api_key` | string | empty | Provider API key. |
-| `config.base_url` | string | empty | Override base URL. |
-| `config.api_path` | string | empty | Override API path. |
-| `config.params` | object | empty | Provider-native request parameters merged into the request body. |
-| `params` | object | empty | Top-level alias accepted by current config loading; used only when `config.params` is empty. |
+| `api_key` | string | empty | Provider API key. |
+| `base_url` | string | empty | Override base URL. |
+| `api_path` | string | empty | Override API path. |
+| `params` | object | empty | Provider-native request parameters merged into the request body. |
 
 ### Provider Credentials And Env Overrides
 
@@ -130,13 +129,13 @@ Examples of supported environment names include:
 - `MISTRAL_API_KEY`
 - `OLLAMA_API_KEY`
 
-Use `config.base_url` when:
+Use `base_url` when:
 
 - pointing Tulkun at an OpenAI-compatible proxy
 - using a self-hosted provider endpoint
 - targeting an enterprise API gateway
 
-Use `config.params` when:
+Use `params` when:
 
 - the model provider supports extra request-time knobs
 - you need provider-native JSON options such as `temperature` or `max_tokens`
@@ -260,11 +259,8 @@ Controls what context sources are injected and how large they can become.
 | Field | Type | Default | Usage |
 | --- | --- | --- | --- |
 | `workspace_bootstrap_md` | boolean | `true` | Includes workspace bootstrap guidance. |
-| `workspace_rules_pre_hook` | boolean | `true` | Injects workspace rules in pre-hook context. |
-| `context_engine_rules_source` | boolean | effective `false` when `workspace_rules_pre_hook` is on | Includes rules through the context engine source path. |
 | `active_memory_pre_hook` | boolean | `true` | Injects Active Memory in pre-hook context. |
 | `skills_level0_source` | boolean | `true` | Exposes level-0 skills as a context source. |
-| `workspace_rules_chain` | boolean | `true` | Enables workspace rules chaining. |
 | `max_pre_hook_rules_chars` | integer | caller-specific fallback | Maximum pre-hook rules chars. |
 | `max_render_item_preview` | integer | `300` | Preview chars per rendered item. |
 | `max_context_engine_json_chars` | integer | caller-specific fallback | Context-engine JSON cap. |
@@ -352,18 +348,17 @@ When the CodeGraph MCP server is available and Tulkun is running inside a Git wo
 
 ## `agents.defaults.guardrails`
 
+The input, output, and retrieval rails are always on and cannot be disabled. Only their tunables are configurable.
+
 | Field | Type | Default | Usage |
 | --- | --- | --- | --- |
 | `prompt.delimiter_begin` | string | empty | Delimiter start marker. |
 | `prompt.delimiter_end` | string | empty | Delimiter end marker. |
 | `prompt.sandwich_tail` | string | empty | Sandwich tail text. |
-| `input.rules_enabled` | boolean | `true` | Enables input-side rules checks. |
 | `input.max_runes` | integer | `200000` | Input size limit. |
 | `input.block_substrings` | string[] | empty | Hard-block substrings. |
 | `input.policy_enforcer.enabled` | boolean | `false` | Enables model-assisted input policy enforcement. The gate's LLM provider comes from `agents.definitions["policy-enforcer"].llm_providers` (falling back to the `main` agent's providers). |
 | `input.policy_enforcer.timeout_seconds` | integer | `45` | Enforcement timeout. |
-| `output.heuristic_enabled` | boolean | `true` | Enables heuristic output checks. |
-| `retrieval.baseline_enabled` | boolean | `true` | Enables retrieval-side baseline checks. |
 | `retrieval.max_chunk_runes` | integer | `120000` | Retrieval chunk cap. |
 
 ## `agents.defaults.heartbeat`
