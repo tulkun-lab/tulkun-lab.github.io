@@ -262,8 +262,6 @@ Controls what context sources are injected and how large they can become.
 | `active_memory_pre_hook` | boolean | `true` | Injects Active Memory in pre-hook context. |
 | `skills_level0_source` | boolean | `true` | Exposes level-0 skills as a context source. |
 | `max_pre_hook_rules_chars` | integer | caller-specific fallback | Maximum pre-hook rules chars. |
-| `max_render_item_preview` | integer | `300` | Preview chars per rendered item. |
-| `max_context_engine_json_chars` | integer | caller-specific fallback | Context-engine JSON cap. |
 | `max_active_memory_summary_chars` | integer | plugin-specific fallback | Active Memory summary cap. |
 | `model_context_tokens` | integer | unset unless configured | Explicit model context window. |
 | `warn_remaining_tokens` | integer | `8000` | Remaining-token warning threshold. |
