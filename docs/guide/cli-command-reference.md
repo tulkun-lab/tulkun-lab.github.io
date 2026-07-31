@@ -105,7 +105,6 @@ Use this family when you need to work with:
 - memory indexing
 - memory search
 - transcript indexing
-- promotion into longer-lived memory
 - consolidation and REM-style memory workflows
 
 This command family exists because Tulkun's memory stack is operational, not

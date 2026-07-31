@@ -195,20 +195,6 @@ Use this block when:
 - you need external embedding infrastructure
 - you need vector-backed search rather than fallback-only retrieval
 
-## `agents.defaults.memory_govern`
-
-Controls scheduled memory governance behavior.
-
-| Field | Type | Default | Usage |
-| --- | --- | --- | --- |
-| `enabled` | boolean | `true` | Enables governance jobs. |
-| `promote_interval_min` | integer | `0` unless set | Promotion interval in minutes. |
-| `rem_interval_min` | integer | `0` unless set | REM-style interval in minutes. |
-| `reindex_after_write` | boolean | `true` | Reindexes after memory writes. |
-| `promote_dry_run` | boolean | `true` | Keeps promotion in dry-run mode unless changed. |
-| `rem_apply` | boolean | disabled unless configured | Allows REM apply phase to mutate state. |
-| `debounce_assistant_sec` | integer | `0` unless set | Debounce before governance reacts to assistant output. |
-
 ## `agents.defaults.evolution_dataset`
 
 | Field | Type | Default | Usage |

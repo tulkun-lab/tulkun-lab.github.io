@@ -8,7 +8,7 @@ This page explains the roles, boundaries, and interactions of:
 - retrieval-oriented search memory
 - Active Memory
 - transcript continuity
-- memory governance
+- durable memory
 - Core Memory and dreaming flags
 
 ## Why Tulkun Splits Memory Into Multiple Systems
@@ -31,7 +31,7 @@ flowchart TB
     A --> C["Active Memory recall query"]
     D["Indexed memory and search roots"] --> E["Search memory"]
     E --> C
-    A --> F["Memory governance paths"]
+    A --> F["Durable memory writes"]
     F --> G["Durable memory artifacts"]
     H["Core Memory flags"] --> F
 ```
@@ -188,23 +188,17 @@ It is especially important because:
 - future turns can use it instead of replaying large raw histories
 - resumed sessions can recover current state faster
 
-## Memory Governance
+## Durable Memory
 
-Memory governance is Tulkun's scheduled memory-maintenance layer.
+Tulkun supports durable memory as explicit long-lived notes written into the
+workspace memory surfaces.
 
-This is configured under `agents.defaults.memory_govern`.
+These writes are validated, deduplicated, indexed, and can carry metadata such
+as trust, review state, validity windows, and conflict-set membership.
 
-It is responsible for the policy side of memory maintenance, including options
-such as:
-
-- promotion cadence
-- REM-style cadence
-- reindex-after-write behavior
-- dry-run promotion mode
-- write debouncing
-
-The governance layer matters because not all memory transitions should happen
-inline during the user-facing turn.
+This matters because not all memory transitions should happen inline during the
+user-facing turn, but durable memory itself remains an explicit runtime surface
+rather than a background promotion system.
 
 ## Core Memory And Dreaming
 
