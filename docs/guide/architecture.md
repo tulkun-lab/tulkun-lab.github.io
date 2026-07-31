@@ -165,7 +165,7 @@ Tulkun does not simply feed “recent messages” to a model.
 Before a turn, the runtime assembles a working context from multiple sources.
 After a turn, it may trigger maintenance work such as:
 
-- session memory refresh
+- transcript continuity refresh
 - prompt suggestion generation
 - tool-use summarization
 
@@ -197,7 +197,7 @@ It includes:
 
 - retrieval-oriented search memory
 - Active Memory recall
-- session memory distillation
+- transcript continuity distillation
 - governance and consolidation paths
 - documented dreaming state
 
@@ -284,7 +284,7 @@ It gives Tulkun the ability to:
 If you are trying to understand one specific part of Tulkun, continue with:
 
 - [Context and Compaction](/guide/context-and-compaction) for prompt-budget management
-- [Memory Systems](/guide/memory-systems) for recall, session memory, and consolidation
+- [Memory Systems](/guide/memory-systems) for recall, transcript continuity, and consolidation
 - [Skills and Tools](/guide/skills-and-tools) for capability surfaces
 - [Subagents](/guide/subagents) for delegation and task structure
 - [Safety Model](/guide/safety-model) for approvals, sandboxing, and guardrails

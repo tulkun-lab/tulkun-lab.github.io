@@ -19,7 +19,7 @@ Agent systems accumulate state from many places, not only from the transcript.
 In Tulkun, a single turn can potentially involve:
 
 - recent conversation history
-- session memory
+- transcript continuity
 - Active Memory summaries
 - workspace bootstrap documents
 - workspace rules
@@ -155,7 +155,7 @@ Manual compaction creates a boundary message labeled as a session compact event.
 Tulkun then:
 
 1. gathers recent turns from the session
-2. prefers an existing session-memory note if one is available and non-template
+2. prefers an existing transcript-continuity note if one is available and non-template
 3. otherwise produces a compact summary
 4. writes a boundary message beginning with `Session compacted`
 5. marks that boundary as the new session summary point
@@ -177,17 +177,17 @@ The trigger is therefore tied to:
 - compaction recommendation
 - actual session activity
 
-## Why Session Memory Matters To Compaction
+## Why Transcript Continuity Matters To Compaction
 
-Tulkun prefers session memory as the seed for compaction when it is available.
+Tulkun prefers transcript continuity as the seed for compaction when it is available.
 
-That is an important design choice because session memory is already a distilled
+That is an important design choice because transcript continuity is already a distilled
 artifact. It is usually a better continuity anchor than a raw heuristic summary
 of the whole transcript.
 
 So in practice:
 
-- session memory helps compaction quality
+- transcript continuity helps compaction quality
 - compaction helps preserve continuity
 - the two systems reinforce each other
 

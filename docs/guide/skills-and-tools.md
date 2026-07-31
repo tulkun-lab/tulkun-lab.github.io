@@ -91,7 +91,6 @@ That makes several workflows possible:
 - enabling or disabling skills
 - installing new skills
 - creating or updating a skill
-- publishing or promoting a skill candidate
 
 This matters because the value of a skill system is not only the instructions
 inside one skill. It is also the ability to manage skills over time.

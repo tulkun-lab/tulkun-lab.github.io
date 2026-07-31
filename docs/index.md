@@ -29,7 +29,7 @@ features:
   - title: Office Productivity Agent
     details: "Tulkun's gateway and channel surfaces can support daily productivity workflows such as document-heavy tasks, knowledge recall, recurring automation, approvals, and team communication."
   - title: Stateful Work Beyond Chat
-    details: "Sessions, runs, context budgets, compaction, Active Memory, session memory, daily memory, and subagents give Tulkun durable structure for long-running development and office work."
+    details: "Sessions, runs, context budgets, compaction, Active Memory, transcript continuity, durable memory, and subagents give Tulkun durable structure for long-running development and office work."
   - title: Built-In Delegation And Coordination
     details: "Coordinator mode, subagent tools, fanout execution, and child run tracking are part of the product model rather than loose prompts."
   - title: Safety As A Product Surface
@@ -105,7 +105,7 @@ history, context diagnostics, tool audit records, and cost summaries.
 
 ### Memory Is Split Into Real Mechanisms
 
-Tulkun separates retrieval memory, Active Memory, session memory, daily memory,
+Tulkun separates retrieval memory, Active Memory, transcript continuity, durable memory,
 context compaction, and post-turn maintenance. This makes memory easier to
 inspect, tune, and reason about than a single vague "agent memory" feature,
 whether the memory is about a codebase, a project, a document workflow, or a

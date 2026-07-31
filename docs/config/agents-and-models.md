@@ -74,7 +74,7 @@ workspace location is fixed by Tulkun and is not user-configurable:
 | `<home>/workspaces/<id>` | Workspace for a non-main primary agent. |
 | `<primary-workspace>/MEMORY.md` | Primary-agent private entry memory. |
 | `<primary-workspace>/memory` | Primary-agent private durable memory. |
-| `<primary-workspace>/state/session-memory` | Primary-agent private session memory. |
+| 
 | `<primary-workspace>/skills` | Primary-agent private workspace skills. |
 | `<home>/memory/shared` | Shared memory visible to all primary agents. |
 | `<home>/skills` | Shared skills visible to all primary agents. |
@@ -209,20 +209,6 @@ Controls scheduled memory governance behavior.
 | `rem_apply` | boolean | disabled unless configured | Allows REM apply phase to mutate state. |
 | `debounce_assistant_sec` | integer | `0` unless set | Debounce before governance reacts to assistant output. |
 
-## `agents.defaults.evolution_proposals`
-
-Controls proposal drafting from repeated tool failures.
-
-| Field | Type | Default | Usage |
-| --- | --- | --- | --- |
-| `enabled` | boolean | disabled unless configured | Enables proposal drafting. |
-| `min_tool_errors_same_tool` | integer | `3` | Minimum repeated same-tool errors before drafting. |
-| `on_batch_task_channel` | boolean | `false` | Enables proposal drafting on batch task channels. |
-| `severe_error_substrings` | string[] | empty | Always-trigger error substrings. |
-| `error_rate_min_errors` | integer | `0` | Minimum errors for rolling error-rate trigger. |
-| `error_rate_window` | integer | `0` | Rolling window size for error-rate trigger. |
-| `multi_tool_aggregate` | boolean | `false` | Allows aggregation across multiple tools. |
-
 ## `agents.defaults.evolution_dataset`
 
 | Field | Type | Default | Usage |
@@ -236,21 +222,6 @@ Controls proposal drafting from repeated tool failures.
 | `enabled` | boolean | disabled unless configured | Enables post-turn evolution analysis. |
 | `system_prompt_path` | string | empty | Prompt file for post-turn analysis. |
 | `budget_runs_per_hour` | integer | `8` | Hourly budget for post-turn runs. |
-
-## `agents.defaults.evolution_strategy`
-
-| Field | Type | Default | Usage |
-| --- | --- | --- | --- |
-| `evolution_strategy` | string | `balanced` | Strategy label for proposal and promotion behavior. |
-
-## `agents.defaults.promote_gate`
-
-| Field | Type | Default | Usage |
-| --- | --- | --- | --- |
-| `smoke_script_rel` | string | `scripts/evolution_smoke.sh` effective helper default | Relative or absolute smoke script. |
-| `require_smoke_pass` | boolean | `false` | Requires smoke pass before promote. |
-| `backup_on_promote` | boolean | `true` | Keeps backup artifacts on promote. |
-| `dedupe_cooldown_hours` | integer | `6` | Proposal dedupe cooldown. |
 
 ## `agents.defaults.context_inject`
 

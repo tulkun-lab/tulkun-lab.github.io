@@ -78,7 +78,6 @@ Representative commands include:
 
 - `/model`
 - `/permissions`
-- `/memory-review`
 - `/skills`
 - `/compact`
 - `/plan`

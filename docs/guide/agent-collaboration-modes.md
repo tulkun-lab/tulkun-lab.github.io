@@ -44,13 +44,13 @@ Primary-agent runtime layout:
 | `<home>/workspaces/<id>` | Default non-main primary workspace |
 | `<primary-workspace>/MEMORY.md` | Private entry memory |
 | `<primary-workspace>/memory` | Private durable memory |
-| `<primary-workspace>/state/session-memory` | Private session memory |
+| 
 | `<primary-workspace>/skills` | Private workspace skills |
 | `<home>/memory/shared` | Shared memory |
 | `<home>/skills` | Shared skills |
 
 Stream keeps the terminal working directory for file operations. The selected
-primary agent still controls memory routing, session memory, workspace-local
+primary agent still controls memory routing, transcript continuity, workspace-local
 skills, active run partitioning, and subagent inheritance.
 
 ## Subagent Session Selection

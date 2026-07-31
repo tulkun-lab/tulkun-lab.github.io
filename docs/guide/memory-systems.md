@@ -7,7 +7,7 @@ This page explains the roles, boundaries, and interactions of:
 
 - retrieval-oriented search memory
 - Active Memory
-- session memory
+- transcript continuity
 - memory governance
 - Core Memory and dreaming flags
 
@@ -27,7 +27,7 @@ Tulkun therefore separates memory by job, not by storage location alone.
 
 ```mermaid
 flowchart TB
-    A["Transcript and tool activity"] --> B["Session memory"]
+    A["Transcript and tool activity"] --> B["Transcript continuity and compaction"]
     A --> C["Active Memory recall query"]
     D["Indexed memory and search roots"] --> E["Search memory"]
     E --> C
@@ -80,15 +80,15 @@ At a high level, Active Memory:
 4. returns a short summary for context injection
 5. caches results briefly to avoid redundant repeated work
 
-### Why Active Memory Is Separate From Session Memory
+### Why Active Memory Is Separate From Transcript Continuity
 
-Session memory summarizes the state of the current conversation as an artifact.
+Transcript continuity is provided by the persisted transcript and semantic compaction boundaries.
 
 Active Memory is a live recall step for the next turn.
 
 That means:
 
-- session memory is continuity-oriented
+- transcript continuity is continuity-oriented
 - Active Memory is prompt-injection-oriented
 
 ### Active Memory Defaults That Matter Operationally
@@ -134,18 +134,17 @@ Supported styles include:
 If the configured style is invalid or omitted, Tulkun infers a style from the
 query mode.
 
-## Session Memory
+## Transcript Continuity
 
-Session memory is Tulkun's structured summary of a live session.
+Transcript continuity is provided by the persisted transcript and semantic compaction boundaries.
 
-It is stored as a dedicated artifact rather than being left implicit in the raw
-transcript.
+It does not create a separate continuity artifact.
 
-### Why Session Memory Exists
+### Why Transcript Continuity Exists
 
 Long sessions accumulate too much detail to be replayed verbatim forever.
 
-Session memory exists to keep:
+Semantic compaction preserves:
 
 - the current state of the work
 - unresolved problems
@@ -155,19 +154,19 @@ Session memory exists to keep:
 
 available in a compact form.
 
-### Session Memory Refresh Model
+### Transcript Continuity Refresh Model
 
-Tulkun refreshes session memory as a background post-turn task rather than as a
+Tulkun refreshes transcript continuity as a background post-turn task rather than as a
 foreground blocking action.
 
 This is important because:
 
 - the assistant reply should not stall waiting for summarization
-- session memory is maintenance work, not the primary user-visible result
+- transcript continuity is maintenance work, not the primary user-visible result
 
 ### What Triggers A Refresh
 
-Session memory refresh is tied to session growth rather than to a fixed timer.
+Transcript continuity comes from session growth and explicit or automatic compaction, rather than a separate refresh job.
 
 Operationally, Tulkun considers factors such as:
 
@@ -178,9 +177,9 @@ Operationally, Tulkun considers factors such as:
 
 This makes refresh behavior adaptive rather than purely periodic.
 
-### What Session Memory Produces
+### What Transcript Continuity Produces
 
-The session memory artifact is designed to preserve current continuity rather
+The transcript continuity artifact is designed to preserve current continuity rather
 than to become a permanent knowledge base entry.
 
 It is especially important because:
@@ -226,7 +225,7 @@ The layers are most useful when understood as a pipeline rather than as a list.
 
 - search memory makes information discoverable
 - Active Memory decides what is worth recalling into the current turn
-- session memory keeps current continuity compressed
+- transcript continuity keeps current continuity compressed
 - governance paths maintain longer-lived structure around those artifacts
 
 That interaction is what lets Tulkun sustain longer sessions without depending
