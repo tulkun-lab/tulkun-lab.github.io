@@ -307,12 +307,8 @@ The input, output, and retrieval rails are always on and cannot be disabled. Onl
 
 | Field | Type | Default | Usage |
 | --- | --- | --- | --- |
-| `prompt.delimiter_begin` | string | empty | Delimiter start marker. |
-| `prompt.delimiter_end` | string | empty | Delimiter end marker. |
-| `prompt.sandwich_tail` | string | empty | Sandwich tail text. |
 | `input.max_runes` | integer | `200000` | Input size limit. |
 | `input.block_substrings` | string[] | empty | Hard-block substrings. |
-| `input.policy_enforcer.enabled` | boolean | `false` | Enables model-assisted input policy enforcement. The gate's LLM provider comes from `agents.definitions["policy-enforcer"].llm_providers` (falling back to the `main` agent's providers). |
 | `input.policy_enforcer.timeout_seconds` | integer | `45` | Enforcement timeout. |
 | `retrieval.max_chunk_runes` | integer | `120000` | Retrieval chunk cap. |
 
