@@ -1,226 +1,78 @@
 # Context and Compaction
 
-Tulkun treats context as an explicit working-set problem.
-
-That is a foundational product decision. Without it, long sessions eventually
-become less accurate, less efficient, and harder to resume safely.
-
-This page explains:
-
-- how Tulkun assembles context
-- how it decides what to keep and what to evict
-- how it signals context pressure
-- how session compaction works when pressure gets too high
-
-## Why Context Needs Management
-
-Agent systems accumulate state from many places, not only from the transcript.
-
-In Tulkun, a single turn can potentially involve:
-
-- recent conversation history
-- transcript continuity
-- Active Memory summaries
-- workspace bootstrap documents
-- workspace rules
-- skill context
-- pinned items
-- recent run metadata
-- tool evidence
-
-If all of that is injected without budgeting, quality eventually degrades.
-
-## Context Assembly Model
-
-Tulkun assembles context from multiple sources into a candidate set of context
-items.
-
-Each item carries attributes such as:
-
-- source identity
-- layer
-- priority
-- estimated token cost
-- pinned status
-
-The runtime then selects the working set under a token budget rather than
-blindly appending sources in one fixed order.
-
-## Context Layers
-
-Tulkun models context items in layers.
-
-The main layers are:
-
-- system
-- workspace
-- session
-- working set
-- evidence
-
-This layering matters because not all context is equally durable or equally
-important.
-
-## The Selection Process
-
-Tulkun's context engine roughly follows this flow:
-
-1. collect candidate items from registered sources
-2. estimate token cost for each item
-3. boost or reduce effective priority based on source and intent
-4. compact oversized item previews
-5. sort by:
-   pinned first, then priority, then token efficiency
-6. select items until item-count and token limits are reached
-7. record which items were selected and which were evicted
-
-This produces both a working set and a provenance trail.
-
-## Threshold States
-
-Tulkun distinguishes between normal operation and context pressure.
-
-The context engine tracks:
-
-- total selected tokens
-- estimated full input size for the turn
-- warning threshold
-- blocking threshold
-
-This yields three practical states:
-
-- `ok`
-- `warn`
-- `block`
-
-Those states are not decorative. They drive compaction recommendations.
-
-## Compaction Recommendations
-
-When Tulkun detects growing pressure, it emits a compaction signal.
-
-The two main recommendations are:
-
-- `compact_recommended`
-- `compact_required`
-
-`compact_recommended` means the session is still usable but is drifting toward
-context inefficiency.
-
-`compact_required` means continuing without a boundary summary is likely to
-damage continuity or overload the working set.
-
-## Why Item Compaction Exists Before Session Compaction
-
-Tulkun performs two different kinds of reduction:
-
-### Item-Level Compaction
-
-Before assembling the final working set, Tulkun trims context-item previews.
-
-This is a lightweight measure used to:
-
-- reduce oversized excerpts
-- preserve source coverage while shrinking payload size
-- avoid wasting budget on long raw blobs
-
-### Session-Level Compaction
-
-When the session itself becomes too large, Tulkun creates a session boundary
-summary.
-
-This is a stronger operation. It does not just shorten an item. It rewrites the
-session history into a continuity artifact.
-
-## Session Compaction Flow
-
-```mermaid
-flowchart TD
-    A["Turn arrives"] --> B["Assemble candidate context"]
-    B --> C["Estimate token budget"]
-    C --> D{"Threshold state"}
-    D -- ok --> E["Continue normally"]
-    D -- warn --> F["Emit compact_recommended"]
-    D -- block --> G["Emit compact_required"]
-    F --> H["Optional manual or auto compact"]
-    G --> H
-    H --> I["Create session compact boundary"]
-    I --> J["Future turns continue from compacted state"]
-```
-
-## How Manual Compaction Works
-
-Manual compaction creates a boundary message labeled as a session compact event.
-
-Tulkun then:
-
-1. gathers recent turns from the session
-2. prefers an existing transcript-continuity note if one is available and non-template
-3. otherwise produces a compact summary
-4. writes a boundary message beginning with `Session compacted`
-5. marks that boundary as the new session summary point
-
-This matters because manual compaction is continuity-oriented, not just
-shortening-oriented.
-
-## How Auto Compaction Works
-
-Auto compaction is driven by context pressure signals rather than by arbitrary
-turn count alone.
-
-If the context snapshot indicates blocking pressure or an explicit compact
-requirement, Tulkun can compact automatically.
-
-The trigger is therefore tied to:
-
-- current budget state
-- compaction recommendation
-- actual session activity
-
-## Why Transcript Continuity Matters To Compaction
-
-Tulkun prefers transcript continuity as the seed for compaction when it is available.
-
-That is an important design choice because transcript continuity is already a distilled
-artifact. It is usually a better continuity anchor than a raw heuristic summary
-of the whole transcript.
-
-So in practice:
-
-- transcript continuity helps compaction quality
-- compaction helps preserve continuity
-- the two systems reinforce each other
-
-## Context Provenance And Eviction
-
-Tulkun keeps track of which context items were:
-
-- selected
-- excluded because of token budget
-- excluded because of item-count limits
-- empty or unavailable
-
-This is operationally useful because it makes context failures explainable.
-
-Instead of “the model forgot,” Tulkun can reason about:
-
-- what was present
-- what was dropped
-- why pressure increased
-
-## Practical Interpretation
-
-From a user perspective, context management answers four questions:
-
-1. what did Tulkun decide to remember for this turn?
-2. what did it leave out?
-3. how close is the session to context overload?
-4. when should the session be compacted?
-
-That is the right mental model for using Tulkun effectively in long sessions.
+Tulkun uses replacement-history compaction. It replaces the model's
+active history with one provider-produced compacted history
+or one local handoff summary, while keeping the transcript append-only for audit
+and resume.
+
+## When Compaction Runs
+
+Automatic compaction is always active. It is checked:
+
+- before recording the incoming user message for a new turn
+- between model samples during a turn
+- after a provider reports that the context window was exceeded
+
+The default threshold is the model's automatic-compaction limit, capped at 90%
+of its full context window. A positive
+`compact.model_auto_compact_token_limit` can lower that threshold but cannot
+raise it. The full model context window is always a hard cap.
+
+`compact.model_auto_compact_token_limit_scope` controls threshold accounting:
+
+- `total` counts the complete active context
+- `body_after_prefix` counts growth after the input-token baseline of the
+  current compact window
+
+The incoming message is not included in the pre-turn compaction request. It is
+appended exactly once to the replacement history afterward.
+
+## Manual `/compact`
+
+`/compact` immediately runs the same compaction pipeline with reason
+`user_requested`. It runs `PreCompact` before the request and `PostCompact`
+after a successful checkpoint. Automatic compaction uses the same hooks with an
+automatic trigger.
+
+In the terminal UI, an indeterminate animated bar is shown for the complete
+compact request lifetime. The running card is replaced by the completed or
+failed compact result, so provider failures cannot leave stale progress behind.
+
+## Provider And Local Semantics
+
+For OpenAI Responses, remote v2 is the default. Tulkun sends the current history
+to the normal `/responses` endpoint with an input item of type
+`compaction_trigger`. The response must contain exactly one compaction item; its
+opaque encrypted content is stored and replayed without interpretation. Recent
+eligible user history is retained within the provider-compatible 64,000-token
+budget.
+
+When `compact.remote_compaction_v2` is `false`, Tulkun uses
+`/responses/compact`. The provider response becomes the replacement history
+after stale developer, system, tool, and non-conversation items are removed.
+
+Providers without remote compaction use the current main model and the built-in 
+handoff prompt. On context-window errors, Tulkun retries after removing
+the oldest history item. The replacement contains up to 20,000 tokens of the
+newest real user messages, followed by a user-role handoff summary with the 
+summary prefix. The oldest partially retained user message keeps its
+beginning and end with a truncation marker.
+
+## Checkpoints And Resume
+
+Every successful compaction appends a durable checkpoint containing the complete
+replacement history. Checkpoints form a UUID-v7 window chain with the current,
+previous, and first window IDs and a monotonically increasing window number.
+
+On resume, Tulkun reconstructs model context from the latest checkpoint plus
+the transcript suffix written after it. Older transcript rows remain available
+for audit but are no longer model-active. A mid-turn compaction reinjects the
+current initial instructions immediately before the newest real user or compact
+item; pre-turn and manual compaction wait for the next normal turn to inject
+fresh instructions.
 
 ## Related
 
 - [Architecture](/guide/architecture)
 - [Memory Systems](/guide/memory-systems)
-- [Safety Model](/guide/safety-model)
+- [Configuration](/config/memory-and-runtime-features)

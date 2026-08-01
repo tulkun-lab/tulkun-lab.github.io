@@ -82,7 +82,7 @@ At a high level, Active Memory:
 
 ### Why Active Memory Is Separate From Transcript Continuity
 
-Transcript continuity is provided by the persisted transcript and semantic compaction boundaries.
+Transcript continuity is provided by the persisted transcript and replacement-history compact checkpoints.
 
 Active Memory is a live recall step for the next turn.
 
@@ -136,15 +136,15 @@ query mode.
 
 ## Transcript Continuity
 
-Transcript continuity is provided by the persisted transcript and semantic compaction boundaries.
+Transcript continuity is provided by the persisted transcript and replacement-history compact checkpoints.
 
 It does not create a separate continuity artifact.
 
 ### Why Transcript Continuity Exists
 
-Long sessions accumulate too much detail to be replayed verbatim forever.
+Long sessions accumulate too much model-active history to be replayed verbatim forever.
 
-Semantic compaction preserves:
+Local summary compaction asks the current main model to preserve:
 
 - the current state of the work
 - unresolved problems
@@ -152,30 +152,15 @@ Semantic compaction preserves:
 - corrections from the user
 - the next useful continuation point
 
-available in a compact form.
+available in a compact form. OpenAI remote compaction instead stores the
+provider's complete replacement history, including its opaque compaction item.
 
-### Transcript Continuity Refresh Model
+### What Triggers A Checkpoint
 
-Tulkun refreshes transcript continuity as a background post-turn task rather than as a
-foreground blocking action.
-
-This is important because:
-
-- the assistant reply should not stall waiting for summarization
-- transcript continuity is maintenance work, not the primary user-visible result
-
-### What Triggers A Refresh
-
-Transcript continuity comes from session growth and explicit or automatic compaction, rather than a separate refresh job.
-
-Operationally, Tulkun considers factors such as:
-
-- transcript growth
-- token growth
-- recent tool-call activity
-- whether the recent assistant turn created a natural extraction point
-
-This makes refresh behavior adaptive rather than purely periodic.
+Automatic compaction runs at the model's token threshold before a turn and
+between model samples. `/compact` triggers the identical checkpoint pipeline
+manually. There is no background transcript-refresh job and no separate compact
+agent.
 
 ### What Transcript Continuity Produces
 
@@ -184,8 +169,7 @@ than to become a permanent knowledge base entry.
 
 It is especially important because:
 
-- compaction prefers it as a continuity seed
-- future turns can use it instead of replaying large raw histories
+- future turns resume from the latest complete replacement history
 - resumed sessions can recover current state faster
 
 ## Durable Memory

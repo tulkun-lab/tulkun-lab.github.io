@@ -163,11 +163,8 @@ an operational system.
 Tulkun does not simply feed “recent messages” to a model.
 
 Before a turn, the runtime assembles a working context from multiple sources.
-After a turn, it may trigger maintenance work such as:
-
-- transcript continuity refresh
-- prompt suggestion generation
-- tool-use summarization
+When model-active history reaches the automatic-compaction threshold, it is
+replaced synchronously with a compact checkpoint before sampling continues.
 
 This is a major architectural difference from stateless chat systems.
 
@@ -183,10 +180,10 @@ an accidental failure state.
 
 That means the runtime can:
 
-- score and select context items
-- warn when the working set is getting too large
-- recommend compaction
-- compact a session into a continuity boundary instead of silently degrading
+- account for either total active context or growth after the compact prefix
+- enforce the model's full context window as a hard cap
+- compact automatically before a turn or between samples
+- replace active history with a durable provider or local checkpoint
 
 ### Memory Systems
 

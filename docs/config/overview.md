@@ -63,7 +63,8 @@ Some fields are populated automatically when omitted. For example:
 
 - `gateway.http_addr` defaults to `127.0.0.1:6060`
 - `gateway.auth.mode` defaults to `token`
-- `compact.auto` defaults to `true`
+- `compact.model_auto_compact_token_limit_scope` defaults to `total`
+- `compact.remote_compaction_v2` defaults to `true`
 
 Every reference page below calls out effective runtime defaults explicitly.
 

@@ -29,16 +29,15 @@ Use `phero.agent_name` when:
 
 | Field | Type | Default | Usage |
 | --- | --- | --- | --- |
-| `compact.auto` | boolean | `true` | Enables automatic compaction behavior. |
+| `compact.prompt` | string | built-in handoff prompt | Overrides the prompt used only for local summary compaction. |
+| `compact.model_auto_compact_token_limit` | integer | model limit, capped at 90% of the context window | Sets an earlier automatic-compaction threshold. Values above the model default do not raise it. |
+| `compact.model_auto_compact_token_limit_scope` | `total` or `body_after_prefix` | `total` | Counts either the full active context or only growth after the current compact-window prefix. |
+| `compact.remote_compaction_v2` | boolean | `true` | For OpenAI Responses, uses a normal `/responses` request containing a compaction trigger. `false` selects `/responses/compact`. |
 
-What it controls:
-
-- whether Tulkun may automatically compact session history under pressure
-
-Use it when:
-
-- long-running sessions should self-maintain continuity
-- you want to disable automatic compaction and rely on manual control instead
+Automatic compaction is part of the runtime and has no enable/disable setting.
+It runs before a turn and again between model samples when the threshold is
+reached. The model's full context window remains a hard limit under both token
+scopes. `/compact` invokes the same replacement-history pipeline manually.
 
 ## `memory`
 
