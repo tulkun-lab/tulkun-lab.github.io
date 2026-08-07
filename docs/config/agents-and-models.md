@@ -164,36 +164,26 @@ Use loop guard when:
 
 This is where most of Tulkun's advanced runtime behavior is configured.
 
-## `agents.defaults.memory_search`
+## `memory`
 
-Controls the retrieval-oriented search memory subsystem.
+Controls the per-primary-agent memory subsystem. Every feature and tool is on
+by default. Each switch below is user-configurable — set any of them to `false`
+to turn that individual feature off.
 
 | Field | Type | Default | Usage |
 | --- | --- | --- | --- |
-| `enabled` | boolean | disabled unless configured | Enables memory search. |
-| `provider` | string | empty | Embedding or search provider. |
-| `model` | string | empty | Embedding model. |
-| `fallback` | string | empty | Fallback search mode such as `fts`. |
-| `remote.base_url` | string | empty | Remote search or embedding service base URL. |
-| `remote.api_key` | string | empty | Remote service API key. |
-| `remote.api_path` | string | empty | Remote API path. |
-| `remote.headers` | object | empty | Extra HTTP headers. |
-| `extra_paths` | string[] | empty | Extra search roots beyond built-in paths. |
-| `query.hybrid.enabled` | boolean | disabled unless configured | Enables hybrid ranking. |
-| `query.hybrid.candidate_multiplier` | number | `0` if omitted | Candidate expansion multiplier. |
-| `query.hybrid.mmr.enabled` | boolean | disabled unless configured | Enables MMR diversification. |
-| `query.hybrid.mmr.lambda` | number | `0` if omitted | MMR lambda. |
-| `query.hybrid.temporal_decay.enabled` | boolean | disabled unless configured | Enables time-based recency bias. |
-| `query.hybrid.temporal_decay.half_life_days` | number | `0` if omitted | Temporal half-life. |
-| `store.vector.enabled` | boolean | disabled unless configured | Enables vector store usage. |
-| `store.vector.extension_path` | string | empty | Loadable vector extension path. |
-| `store.vector.embedding_dimensions` | integer | `0` if omitted | Embedding size. |
+| `enabled` | boolean | `true` | Master switch for the memory subsystem. |
+| `use_memories` | boolean | `true` | Surface memories through the read path. |
+| `generate_memories` | boolean | `true` | Run the background extraction and consolidation pipeline. |
+| `dedicated_tools` | boolean | `true` | Register the namespaced memory tools. |
+| `disable_on_external_context` | boolean | `false` | Mark a session polluted when external context may have entered the transcript. |
+| `max_raw_memories_for_consolidation` | integer | `256` | Cap on stage1 raw memories fed into consolidation. |
+| `max_unused_days` | integer | `30` | Prune stage1 outputs unused for this many days. |
+| `extract_model` / `extract_provider` | string | empty | Model and provider for stage1 extraction. |
+| `consolidation_model` / `consolidation_provider` | string | empty | Model and provider for stage2 consolidation. |
 
-Use this block when:
-
-- you want search-based recall from workspace or memory content
-- you need external embedding infrastructure
-- you need vector-backed search rather than fallback-only retrieval
+The dedicated memory tools are `memories_list`, `memories_read`,
+`memories_search`, and `memories_add_ad_hoc_note`.
 
 ## `agents.defaults.evolution_dataset`
 

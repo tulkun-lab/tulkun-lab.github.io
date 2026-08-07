@@ -13,8 +13,8 @@ Tulkun ships as a single self-contained binary. The Vue frontend is **embedded
 into the Go executable** at build time via `go:embed`, so the gateway serves the
 web UI directly from memory with no external files to deploy.
 
-This means a release artifact is just the binary (plus the `sqlite-vec` native
-extension). There is no separate static directory to ship, mount, or configure.
+This means a release artifact is just the binary. There is no separate static
+directory to ship, mount, or configure.
 
 ### How embedding works
 
@@ -58,8 +58,6 @@ status codes.
 - **Node.js 22** with **pnpm 10** (via Corepack — `corepack enable`).
 - **CGO** enabled with a C toolchain (`gcc`/`clang`), because Tulkun links
   SQLite with the `fts5` build tag.
-- The **sqlite-vec** native extension for runtime vector search (downloaded by
-  the Docker build and the npm packaging script; see below).
 
 ## Building With Make
 
@@ -131,11 +129,10 @@ The Dockerfile is a multi-stage build:
 
 1. **frontend stage** (`node:22`) — installs deps and runs the Vite build, which
    writes to `internal/webui/dist`.
-2. **gobuild stage** (`golang:1.26`) — downloads the `sqlite-vec` extension,
-   copies the built frontend in **before** `go build`, and compiles the binary
-   with the UI embedded.
-3. **final stage** (`debian:bookworm-slim`) — copies only the binary and
-   `vec0.so`. It exposes `6060` and runs `gateway start`.
+2. **gobuild stage** (`golang:1.26`) — copies the built frontend in **before**
+   `go build`, and compiles the binary with the UI embedded.
+3. **final stage** (`debian:bookworm-slim`) — copies only the binary. It exposes
+   `6060` and runs `gateway start`.
 
 Because the UI is embedded, the final image carries no `/app/static` directory
 and sets no `TULKUN_STATIC_DIST` — the binary is fully self-contained.
@@ -143,8 +140,8 @@ and sets no `TULKUN_STATIC_DIST` — the binary is fully self-contained.
 ## Per-Platform npm Packages
 
 `npm/scripts/build-platform-packages.sh` produces one npm package per platform
-under `npm/dist/@tulkun-lab/`, each containing the native binary, the matching
-`sqlite-vec` library, and a platform-scoped `package.json` (`os`/`cpu` fields).
+under `npm/dist/@tulkun-lab/`, each containing the native binary and a
+platform-scoped `package.json` (`os`/`cpu` fields).
 
 ```bash
 make release
@@ -161,8 +158,6 @@ Useful environment variables:
 | --- | --- | --- |
 | `TULKUN_VERSION` | `0.1.0` | Package and binary version. |
 | `TULKUN_BUILD_TARGETS` | host triple | Space-separated targets, e.g. `"darwin/arm64 linux/amd64"`. |
-| `SQLITE_VEC_VERSION` | `0.1.6` | sqlite-vec release to bundle. |
-| `SQLITE_VEC_CACHE_DIR` | `<repo>/sqlite-vec` | Local cache of sqlite-vec libraries. |
 
 Cross-compiling requires `CGO_ENABLED=1` and the matching C toolchain for each
 target; by default the script builds only the host triple so local development

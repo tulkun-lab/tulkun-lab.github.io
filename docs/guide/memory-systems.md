@@ -5,11 +5,14 @@ not enough for serious agent work.
 
 This page explains the roles, boundaries, and interactions of:
 
-- retrieval-oriented search memory
-- Active Memory
+- per-primary-agent durable memory
+- the memory read path
 - transcript continuity
-- durable memory
-- Core Memory and dreaming flags
+- the background memory pipeline
+
+Every memory feature and tool is on by default. Each feature remains
+individually configurable, so any single feature can be turned off through its
+configuration flag without affecting the others.
 
 ## Why Tulkun Splits Memory Into Multiple Systems
 
@@ -19,7 +22,7 @@ For example:
 
 - finding a relevant old fact is not the same as summarizing the current session
 - deciding what to inject into the next turn is not the same as long-term consolidation
-- keeping context continuity is not the same as exporting a search index
+- keeping context continuity is not the same as writing durable notes
 
 Tulkun therefore separates memory by job, not by storage location alone.
 
@@ -28,121 +31,59 @@ Tulkun therefore separates memory by job, not by storage location alone.
 ```mermaid
 flowchart TB
     A["Transcript and tool activity"] --> B["Transcript continuity and compaction"]
-    A --> C["Active Memory recall query"]
-    D["Indexed memory and search roots"] --> E["Search memory"]
-    E --> C
-    A --> F["Durable memory writes"]
-    F --> G["Durable memory artifacts"]
-    H["Core Memory flags"] --> F
+    A --> P["Background memory pipeline"]
+    P --> M["Durable memory artifacts"]
+    M --> R["Read path and memory tools"]
+    R --> A
 ```
 
-## Search Memory
+## Durable Memory
 
-Search memory is Tulkun's retrieval-oriented memory layer.
+Durable memory is the set of long-lived markdown artifacts written per primary
+agent under that agent's memory root.
 
-Its job is to make previously written or indexed information discoverable again.
+Memories for different primary agents are fully isolated: each primary agent
+sees only its own memory root, and neither the read path nor the tools can
+reach another agent's memories.
 
-This matters when:
+Durable memory is produced by the background pipeline and read back through the
+read path and the namespaced memory tools.
 
-- workspace or memory data should be searched rather than replayed from transcript
-- embedding-backed retrieval is available
-- fallback retrieval modes are needed when vector infrastructure is absent
+## The Read Path
 
-Search memory is usually configured through `agents.defaults.memory_search`.
+The read path decides what durable memory is surfaced to the model.
 
-Operationally, it can include:
+When memory is present, the read path injects a compact developer instruction
+built from the primary agent's memory summary, so the model can recall prior
+knowledge before continuing.
 
-- provider and model selection
-- remote embedding or search services
-- extra search roots
-- hybrid ranking
-- vector-store configuration
+The read path does not replay raw transcript. It surfaces consolidated durable
+memory.
 
-Search memory does not decide by itself what enters the current turn. It makes
-candidate information discoverable.
+## Memory Tools
 
-## Active Memory
+The namespaced memory tools operate on the primary agent's memory root:
 
-Active Memory is a turn-time recall mechanism.
+- `memories_list` lists entries under the memory root
+- `memories_read` reads a memory file with line offsets and caps
+- `memories_search` searches memory files by substring
+- `memories_add_ad_hoc_note` writes a single new ad-hoc note
 
-Its job is to decide whether useful prior knowledge should be summarized and
-brought into the current turn before the main response continues.
-
-That makes it fundamentally different from plain retrieval.
-
-### What Active Memory Actually Does
-
-At a high level, Active Memory:
-
-1. decides whether the current agent and chat type are allowed to use it
-2. builds a recall query from the current turn and recent session material
-3. runs a dedicated recall flow
-4. returns a short summary for context injection
-5. caches results briefly to avoid redundant repeated work
-
-### Why Active Memory Is Separate From Transcript Continuity
-
-Transcript continuity is provided by the persisted transcript and replacement-history compact checkpoints.
-
-Active Memory is a live recall step for the next turn.
-
-That means:
-
-- transcript continuity is continuity-oriented
-- Active Memory is prompt-injection-oriented
-
-### Active Memory Defaults That Matter Operationally
-
-The runtime has effective defaults for:
-
-- allowed agents: `main`
-- allowed chat types: `direct`
-- query mode: `recent`
-- prompt style: `balanced`
-- timeout: `15000 ms`
-- summary size cap: `220 chars`
-- short-term user and assistant windows
-- cache TTL: `15000 ms`
-
-These defaults make Active Memory conservative by default.
-
-### Query Modes
-
-Active Memory supports multiple query modes because “recent context” can mean
-different things in practice.
-
-- `recent`: short recent-window recall
-- `message`: more message-specific shaping
-- `full`: broader transcript-conditioned recall
-
-If no valid mode is configured, Tulkun falls back to `recent`.
-
-### Prompt Styles
-
-Prompt style controls how the recall prompt is phrased rather than whether
-recall happens at all.
-
-Supported styles include:
-
-- `balanced`
-- `strict`
-- `contextual`
-- `recall-heavy`
-- `precision-heavy`
-- `preference-only`
-
-If the configured style is invalid or omitted, Tulkun infers a style from the
-query mode.
+These tools are registered by default. They are scoped to the active primary
+agent and reject paths that escape the memory root, hidden components, and
+symlinks.
 
 ## Transcript Continuity
 
-Transcript continuity is provided by the persisted transcript and replacement-history compact checkpoints.
+Transcript continuity is provided by the persisted transcript and
+replacement-history compact checkpoints.
 
 It does not create a separate continuity artifact.
 
 ### Why Transcript Continuity Exists
 
-Long sessions accumulate too much model-active history to be replayed verbatim forever.
+Long sessions accumulate too much model-active history to be replayed verbatim
+forever.
 
 Local summary compaction asks the current main model to preserve:
 
@@ -164,47 +105,37 @@ agent.
 
 ### What Transcript Continuity Produces
 
-The transcript continuity artifact is designed to preserve current continuity rather
-than to become a permanent knowledge base entry.
+The transcript continuity artifact is designed to preserve current continuity
+rather than to become a permanent durable memory entry.
 
 It is especially important because:
 
 - future turns resume from the latest complete replacement history
 - resumed sessions can recover current state faster
 
-## Durable Memory
+## The Background Memory Pipeline
 
-Tulkun supports durable memory as explicit long-lived notes written into the
-workspace memory surfaces.
+The background pipeline turns completed turns into durable memory without
+blocking the user-facing turn.
 
-These writes are validated, deduplicated, indexed, and can carry metadata such
-as trust, review state, validity windows, and conflict-set membership.
+At a high level:
 
-This matters because not all memory transitions should happen inline during the
-user-facing turn, but durable memory itself remains an explicit runtime surface
-rather than a background promotion system.
+1. Stage 1 extracts raw memory from eligible completed turns and stores it in
+   the state database.
+2. Stage 2 consolidates stored stage1 outputs into durable markdown artifacts
+   under the primary agent's memory root.
 
-## Core Memory And Dreaming
-
-Tulkun exposes a `memory.core` block and a documented dreaming state.
-
-The important product interpretation is:
-
-- `memory.core` represents the documented Core Memory surface
-- `dreaming` flags mirror consolidation-oriented state
-- when dreaming frequency is unset, Tulkun reports it as `manual`
-
-The dreaming flags are not a separate magical memory engine. They are part of
-the documented memory-governance and consolidation story.
+Stage1 outputs are pruned when they go unused, and generation can be excluded
+for a session when external context may have entered its transcript.
 
 ## How The Memory Layers Work Together
 
 The layers are most useful when understood as a pipeline rather than as a list.
 
-- search memory makes information discoverable
-- Active Memory decides what is worth recalling into the current turn
+- the background pipeline turns turns into durable memory
+- the read path decides what durable memory is worth recalling into the current turn
+- the memory tools let the model list, read, search, and note memory explicitly
 - transcript continuity keeps current continuity compressed
-- governance paths maintain longer-lived structure around those artifacts
 
 That interaction is what lets Tulkun sustain longer sessions without depending
 on raw transcript replay alone.
@@ -213,8 +144,7 @@ on raw transcript replay alone.
 
 If you are configuring behavior:
 
-- use `/config/agents-and-models` for search memory and governance settings
-- use `/config/memory-and-runtime-features` for Active Memory and Core Memory flags
+- use `/config/agents-and-models` for the `memory` block
 
 If you are reasoning about continuity:
 
