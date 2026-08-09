@@ -185,20 +185,6 @@ to turn that individual feature off.
 The dedicated memory tools are `memories_list`, `memories_read`,
 `memories_search`, and `memories_add_ad_hoc_note`.
 
-## `agents.defaults.evolution_dataset`
-
-| Field | Type | Default | Usage |
-| --- | --- | --- | --- |
-| `max_rows_per_run` | integer | `5000` | Export row limit per run. |
-
-## `agents.defaults.evolution_post_turn`
-
-| Field | Type | Default | Usage |
-| --- | --- | --- | --- |
-| `enabled` | boolean | disabled unless configured | Enables post-turn evolution analysis. |
-| `system_prompt_path` | string | empty | Prompt file for post-turn analysis. |
-| `budget_runs_per_hour` | integer | `8` | Hourly budget for post-turn runs. |
-
 ## `agents.defaults.context_inject`
 
 Controls what context sources are injected and how large they can become.

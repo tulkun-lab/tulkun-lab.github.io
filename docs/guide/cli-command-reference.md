@@ -165,7 +165,6 @@ configuration reference. The workflow config lives under
 Tulkun also exposes advanced surfaces for areas such as:
 
 - authentication
-- evolution workflows
 - MCP and integration-oriented operations
 - sessions and logs
 

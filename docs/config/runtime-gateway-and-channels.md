@@ -3,7 +3,6 @@
 This page documents the runtime-facing parts of `tulkun.yaml`:
 
 - top-level runtime identity settings
-- wiki path handling
 - gateway service behavior
 - messaging and webhook integrations
 
@@ -39,31 +38,6 @@ Use it when:
 
 - you want Tulkun to feel more direct and engineering-oriented across sessions
 - you want to disable explicit personality selection for supported models
-
-### `wiki.path`
-
-Controls the local wiki or vault path Tulkun can treat as a workspace knowledge
-surface.
-
-| Field | Type | Default | Usage |
-| --- | --- | --- | --- |
-| `wiki.path` | string | `~/.tulkun/workspace/wiki` | Points Tulkun at a local Markdown wiki or vault. |
-
-What it controls:
-
-- the directory Tulkun treats as the wiki root
-- an additional workspace-like path that can be surfaced to the agent
-
-Usage notes:
-
-- relative paths resolve under Tulkun home
-- absolute paths are allowed
-- environment-based resolution can still override this path
-
-Use it when:
-
-- you maintain an operational wiki or Markdown vault alongside coding work
-- you want Tulkun to treat that content as an explicit knowledge root
 
 ## `gateway`
 
