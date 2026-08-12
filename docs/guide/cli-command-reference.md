@@ -176,7 +176,7 @@ prompt-response usage.
 Important root-level flags include:
 
 - `--home`
-- `--dangerously-bypass-approvals-and-sandbox`
+- `--yolo`
 - `--yolo`
 
 These flags affect core runtime behavior and should be used intentionally.

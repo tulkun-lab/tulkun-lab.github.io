@@ -5,95 +5,27 @@ This page is the configuration reference for Tulkun's sandbox controls.
 This page does not explain the full safety model. It documents the config
 surface that shapes execution isolation and dangerous fallback behavior.
 
+## `sandbox_mode`
+
+`sandbox_mode` defaults to `read-only` and accepts exactly:
+
+- `read-only`: files are readable and writes are denied.
+- `workspace-write`: the workspace and configured writable roots are writable.
+- `danger-full-access`: commands run without an operating-system sandbox.
+
+When a selected sandbox backend is unavailable, execution fails closed. A
+single command can request host execution with
+`sandbox_permissions: require_escalated`; whether an approval prompt may be
+shown is controlled by `approval_policy`.
+
+`--yolo` sets `approval_policy` to `never` and `sandbox_mode` to
+`danger-full-access` for the process.
+
 ## `sandbox`
 
-| Field | Type | Default | Usage |
-| --- | --- | --- | --- |
-| `sandbox.enabled` | boolean | `false` unless set | Enables Tulkun sandboxing. |
-| `sandbox.fail_if_unavailable` | boolean | `false` unless set | Fails startup if the sandbox backend is unavailable. |
-| `sandbox.auto_allow_bash_if_sandboxed` | boolean | config value defaults to `false`; runtime nil-sandbox fallback differs | Auto-allows Bash when sandbox mode is active. |
-| `sandbox.allow_unsandboxed_commands` | boolean | effective `true` when omitted | Allows dangerous fallback to unsandboxed execution. |
-| `sandbox.enabled_platforms` | string[] | empty means all supported platforms | Restricts sandbox enablement by platform. |
-| `sandbox.excluded_commands` | string[] | empty | Command patterns that bypass sandboxing. |
-| `sandbox.filesystem` | object | empty | Filesystem allow and deny policy. |
-| `sandbox.network` | object | empty | Network allow and deny policy. |
-| `sandbox.ignore_violations` | object map | empty | Ignores selected violation types for selected tools. |
-| `sandbox.enable_weaker_nested_sandbox` | boolean | `false` | Relaxes nested sandboxing. |
-| `sandbox.enable_weaker_network_isolation` | boolean | `false` | Relaxes network isolation. |
-| `sandbox.ripgrep` | object | empty | Ripgrep command configuration used inside the sandbox. |
-
-## How To Think About The Main Switches
-
-### `sandbox.enabled`
-
-Turns the sandbox system on.
-
-Use it when:
-
-- Tulkun should isolate tool execution rather than running directly on the host
-
-### `sandbox.fail_if_unavailable`
-
-Controls whether startup should continue when the selected sandbox backend is
-missing or unusable.
-
-Use it when:
-
-- sandboxing is a hard requirement in your environment
-- falling back to non-sandboxed execution is unacceptable
-
-### `sandbox.auto_allow_bash_if_sandboxed`
-
-Controls whether Bash is auto-allowed when sandboxing is active.
-
-Important note:
-
-- this field is a plain boolean in the config structure
-- the explicit config value defaults to `false` unless you set it
-- a nil sandbox object is treated differently by helper logic
-
-Practical rule:
-
-- if you want this behavior, set it explicitly
-- do not rely on omission here
-
-### `sandbox.allow_unsandboxed_commands`
-
-Controls whether Tulkun may fall back to unsandboxed command execution.
-
-Important note:
-
-- if omitted, the effective runtime default is `true`
-- set it explicitly to `false` if you want to block unsandboxed fallback
-
-Use it when:
-
-- you need a hard guarantee that Tulkun should not escape sandbox execution
-
-## `sandbox.enabled_platforms`
-
-Restricts sandboxing to specific platforms.
-
-Accepted values:
-
-- `darwin`
-- `linux`
-- `wsl`
-- `wsl2`
-
-If empty, Tulkun treats all supported platforms as eligible.
-
-## `sandbox.excluded_commands`
-
-Command patterns that always bypass sandboxing.
-
-Use it carefully. This is effectively an escape hatch for command classes that
-must not be routed through sandbox execution.
-
-Examples:
-
-- `git commit`
-- `npm *`
+The `sandbox` object contains detailed filesystem, network, violation, and
+platform-backend settings. It does not select whether commands are sandboxed;
+that selection belongs to `sandbox_mode`.
 
 ## `sandbox.filesystem`
 
