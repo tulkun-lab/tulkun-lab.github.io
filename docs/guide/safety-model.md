@@ -85,16 +85,30 @@ For example:
 
 ## Permission Modes
 
-Tulkun also supports different permission modes, including:
+The permission mode decides when Tulkun is allowed to interrupt you. It is set
+by `approval_policy` in `tulkun.yaml`:
 
-- `default`
-- `acceptEdits`
-- `bypassPermissions`
-- `dontAsk`
-- `plan`
+- `untrusted`: only provably safe commands run unasked
+- `on-request`: work happens inside the sandbox, and you are asked only when
+  something needs to leave it
+- `never`: nothing is ever asked, and anything that would have been asked is
+  denied instead
+- `granular`: an object that switches prompting on or off per category
 
-These modes alter how aggressively Tulkun asks for approval and how it interprets
-tool-risk posture in the current session.
+Leaving `approval_policy` unset is the normal case: a project you have rejected
+starts in `untrusted`, and a trusted or not-yet-judged project starts in
+`on-request`.
+
+Two further modes are session state rather than configuration. Approving a plan
+with `exit_plan_mode` can put the session into `auto-approve` (approve
+everything for the rest of the session) or `auto-approve-edits` (approve reads
+and file edits, keep asking about the rest). They are deliberately separate
+values so that approving a plan cannot rewrite the configured policy.
+
+A mode never widens what the sandbox permits; it only decides whether you are
+asked before an action is attempted. See
+[Sandbox And Permissions](/config/sandbox-and-permissions) for the full
+reference.
 
 ## Layer 3: Sandboxed Vs Unsandboxed Execution
 

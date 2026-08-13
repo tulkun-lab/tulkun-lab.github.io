@@ -7,11 +7,32 @@ surface that shapes execution isolation and dangerous fallback behavior.
 
 ## `sandbox_mode`
 
-`sandbox_mode` defaults to `read-only` and accepts exactly:
+`sandbox_mode` accepts exactly:
 
 - `read-only`: files are readable and writes are denied.
 - `workspace-write`: the workspace and configured writable roots are writable.
 - `danger-full-access`: commands run without an operating-system sandbox.
+
+When `sandbox_mode` is omitted it is derived from the launch project's trust
+decision:
+
+| Trust decision | Derived mode |
+| --- | --- |
+| Trusted | `workspace-write` |
+| Explicitly rejected | `workspace-write` |
+| Not decided yet | `read-only` |
+
+Any explicit decision earns a writable workspace, including a rejection: a
+rejected project is held back by its approval policy, which asks before anything
+that is not provably safe, rather than by a read-only filesystem. A project
+nobody has judged has no such backstop, so the sandbox is what protects it.
+
+On Windows the derivation stays `read-only` unless `windows.sandbox` is
+configured, because there is otherwise no enforcement to fall back on.
+
+Setting `sandbox_mode` or `default_permissions` explicitly disables the
+derivation. The derived value is runtime state and is never written back to
+`tulkun.yaml`.
 
 When a selected sandbox backend is unavailable, execution fails closed. A
 single command can request host execution with
@@ -20,6 +41,109 @@ shown is controlled by `approval_policy`.
 
 `--yolo` sets `approval_policy` to `never` and `sandbox_mode` to
 `danger-full-access` for the process.
+
+## `approval_policy`
+
+`approval_policy` decides **when Tulkun may ask you to approve something**. It is
+a separate axis from `sandbox_mode`, which decides what a command may touch once
+it runs.
+
+When `approval_policy` is omitted it is derived from the launch project's trust
+decision:
+
+| Trust decision | Derived policy |
+| --- | --- |
+| Trusted | `on-request` |
+| Explicitly rejected | `untrusted` |
+| Not decided yet | `on-request` |
+
+A project nobody has judged is not treated as rejected. Like `sandbox_mode`, the
+derived value is runtime state and is never written back to `tulkun.yaml` —
+persisting it would pin one branch of the derivation and the project's trust
+decision could no longer change the policy. The two derivations are independent:
+setting `sandbox_mode` explicitly does not freeze `approval_policy`, and vice
+versa.
+
+Three values are written as a plain string:
+
+| Value | When Tulkun asks | What it means for shell commands |
+| --- | --- | --- |
+| `untrusted` | Whenever a command is not provably safe | Known-safe commands run; everything else prompts before it runs. |
+| `on-request` | Only when a command needs to leave the sandbox | Commands run inside the sandbox without prompting. |
+| `never` | Never | Nothing is ever prompted. A rule that would ask becomes a denial, so the agent is confined to what the sandbox and the allow rules already permit. |
+
+`on-failure` is accepted as a legacy spelling of `on-request`.
+
+Use `untrusted` when:
+
+- you are working in an unfamiliar repository and want to see each command first
+
+Use `never` when:
+
+- Tulkun runs unattended (CI, cron, a gateway worker) and nobody can answer a
+  prompt — pair it with explicit allow rules, because unmatched work is denied
+  rather than queued
+
+`--yolo` sets `approval_policy` to `never` and `sandbox_mode` to
+`danger-full-access` for the process. That combination is the opposite of the
+`never` case above: nothing is asked *and* nothing is sandboxed.
+
+### `approval_policy.granular`
+
+The fourth value is an object rather than a string, and turns prompting on or
+off per category. It must be written as an object — the bare string `granular`
+is rejected.
+
+```yaml
+approval_policy:
+  granular:
+    sandbox_approval: true
+    rules: true
+    mcp_elicitations: true
+    skill_approval: false
+    request_permissions: false
+```
+
+| Field | Type | Required | Default | Prompt it controls |
+| --- | --- | --- | --- | --- |
+| `sandbox_approval` | boolean | yes | — | A command was denied by the sandbox and wants to run on the host. |
+| `rules` | boolean | yes | — | A permission rule with `ask` behavior matched. |
+| `mcp_elicitations` | boolean | yes | — | An MCP server elicits input. |
+| `skill_approval` | boolean | no | `false` | A skill asks to run. |
+| `request_permissions` | boolean | no | `false` | A tool calls `request_permissions` for extra filesystem or network access. |
+
+The three required fields must be present; omitting any one of them is a
+configuration error rather than a silent default. Network approvals and MCP tool
+approvals always prompt and are not switchable here.
+
+Use `granular` when:
+
+- you want unattended sandbox escalation to be refused, but still want to be
+  asked about MCP elicitations or `ask` rules
+
+### Approval Policy And Sandbox Escalation
+
+When the sandbox denies a command, Tulkun offers to run it on the host. Two
+policies refuse that prompt: `never`, which refuses every prompt, and `granular`
+with `sandbox_approval: false`, which refuses this one specifically. Under
+`untrusted` and `on-request` the prompt is shown — a command that cannot do its
+work inside the sandbox is exactly what those policies exist to ask about.
+
+Where the prompt is refused, the denial is returned to the model as a command
+error instead, and the model is expected to find another approach.
+
+### Runtime-Only Modes
+
+Two further modes exist but cannot be written into `tulkun.yaml`. They are
+session state produced by the four choices Tulkun offers when a plan is
+approved with `exit_plan_mode`:
+
+- `auto-approve`: every tool call is approved for the rest of the session.
+- `auto-approve-edits`: file reads, edits, and writes are approved
+  automatically; everything else still follows `approval_policy`.
+
+Keeping them separate from `approval_policy` means approving a plan cannot
+silently rewrite your configured policy.
 
 ## `sandbox`
 
