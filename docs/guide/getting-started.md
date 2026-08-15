@@ -201,6 +201,5 @@ Start with the gateway workflow rather than the interactive shell workflow.
 5. [Skills and Tools](/guide/skills-and-tools)
 6. [Subagents](/guide/subagents)
 7. [Safety Model](/guide/safety-model)
-8. [GitHub Issue Autofix](/guide/github-issue-autofix)
-9. [CLI Command Reference](/guide/cli-command-reference)
-10. [Telemetry](/guide/telemetry)
+8. [CLI Command Reference](/guide/cli-command-reference)
+9. [Telemetry](/guide/telemetry)

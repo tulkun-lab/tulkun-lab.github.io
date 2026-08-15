@@ -16,7 +16,7 @@ Tulkun's command surface falls into six practical groups.
 | Configuration | Inspect and change runtime and model settings |
 | Memory and skills | Manage retrieval, recall, summarization, and reusable skill assets |
 | Run operations | Inspect or cancel active and recent work |
-| Automation and advanced operations | Scheduled jobs, diagnostics, and integration-focused workflows |
+| Advanced operations | Diagnostics, authentication, sessions, logs, and integrations |
 
 ## Interactive Entry
 
@@ -137,32 +137,9 @@ Typical use cases:
 This is distinct from interactive shell usage because it is about run control,
 not conversation flow.
 
-## Automation And Advanced Operations
+## Advanced Operations
 
-### `tulkun cron ...`
-
-Use this family to define scheduled work such as recurring prompts or timed
-execution.
-
-The built-in GitHub issue repair workflow is created as a normal cron skill:
-
-```bash
-tulkun cron create \
-  --name github-issue-autofix \
-  --schedule "0 * * * *" \
-  --skill github-issue-autofix
-```
-
-Use it when Tulkun should periodically inspect labeled GitHub issues, repair
-them in isolated worktrees, fork before pushing, create pull requests, and keep
-following later issue or PR comments. See
-[GitHub Issue Autofix](/guide/github-issue-autofix) for the full setup and
-configuration reference. The workflow config lives under
-`skills.github-issue-autofix` in `$TULKUN_HOME/tulkun.yaml`.
-
-### Other advanced command families
-
-Tulkun also exposes advanced surfaces for areas such as:
+Tulkun exposes advanced surfaces for areas such as:
 
 - authentication
 - MCP and integration-oriented operations
@@ -176,7 +153,6 @@ prompt-response usage.
 Important root-level flags include:
 
 - `--home`
-- `--yolo`
 - `--yolo`
 
 These flags affect core runtime behavior and should be used intentionally.
@@ -199,5 +175,4 @@ Use this quick decision model:
 
 - [Getting Started](/guide/getting-started)
 - [CLI and Surfaces](/guide/cli-and-surfaces)
-- [GitHub Issue Autofix](/guide/github-issue-autofix)
 - [Configuration Overview](/config/overview)

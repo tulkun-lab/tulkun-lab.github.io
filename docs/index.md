@@ -73,8 +73,8 @@ execution, context assembly, memory refresh, guardrails, permissions, and
 post-turn lifecycle hooks.
 
 Compared with a typical office assistant, Tulkun is not only a chat UI. It has
-durable sessions, memory systems, files, channels, scheduled work, task
-coordination, approvals, and run observability.
+durable sessions, memory systems, files, channels, task coordination,
+approvals, and run observability.
 
 This is the product bet: a leading open-source agent should be powerful in the
 terminal, useful as infrastructure, approachable for everyday productivity, and

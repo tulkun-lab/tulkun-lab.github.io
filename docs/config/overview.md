@@ -86,7 +86,7 @@ Use the following split when editing the config.
   personality selection.
 - [Hooks And Skill Extensions](/config/hooks-and-skill-extensions)
   Covers lifecycle hooks and skill-specific extension configuration such as
-  `skills.database-query` and `skills.github-issue-autofix`.
+  `skills.database-query`.
 
 ## What This Reference Covers
 

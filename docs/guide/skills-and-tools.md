@@ -133,14 +133,14 @@ Skills are stored under a root as:
 <skill-root>/<skill-name>/SKILL.md
 ```
 
-For example, these all define a skill named `github-issue-autofix` at different
+For example, these all define a skill named `database-query` at different
 priorities:
 
 ```text
-<current-workspace>/.tulkun/skills/github-issue-autofix/SKILL.md
-$TULKUN_HOME/workspace/skills/github-issue-autofix/SKILL.md
-$TULKUN_HOME/skills/github-issue-autofix/SKILL.md
-$TULKUN_HOME/skills/.system/github-issue-autofix/SKILL.md
+<current-workspace>/.tulkun/skills/database-query/SKILL.md
+$TULKUN_HOME/workspace/skills/database-query/SKILL.md
+$TULKUN_HOME/skills/database-query/SKILL.md
+$TULKUN_HOME/skills/.system/database-query/SKILL.md
 ```
 
 If more than one root contains the same skill name, Tulkun uses the first match

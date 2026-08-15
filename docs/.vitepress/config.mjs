@@ -32,7 +32,6 @@ export default defineConfig({
         { text: "Subagents", link: "/guide/subagents" },
         { text: "Agent Collaboration Modes", link: "/guide/agent-collaboration-modes" },
         { text: "Safety Model", link: "/guide/safety-model" },
-        { text: "GitHub Issue Autofix", link: "/guide/github-issue-autofix" },
         { text: "CLI Command Reference", link: "/guide/cli-command-reference" },
         { text: "Telemetry", link: "/guide/telemetry" }
       ],
