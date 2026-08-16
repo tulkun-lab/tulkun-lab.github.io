@@ -100,32 +100,6 @@ Use it when:
 - a skill explicitly documents configuration under `skills.<skill-name>`
 - you want to supply external connection details or policy to a skill
 
-## `skills.database-query`
-
-The built-in `database-query` skill reads database connections from
-`skills.database-query.databases`.
-
-### `skills.database-query.databases[]`
-
-| Field | Type | Default | Usage |
-| --- | --- | --- | --- |
-| `name` | string | empty | Logical connection name used when selecting the database. |
-| `type` | string | empty | Database type: `postgresql`, `mysql`, or `sqlite`. |
-| `host` | string | empty | Database host for networked databases. |
-| `port` | integer | provider convention if omitted | Database port. |
-| `database` | string | empty | Database or schema target. |
-| `username` | string | empty | Database username. |
-| `password` | string | empty | Database password; use `${ENV_NAME}` rather than plaintext. |
-| `schema` | string | provider-specific | Optional PostgreSQL schema. |
-| `path` | string | empty | SQLite file path. |
-
-Usage guidance:
-
-- use read-only credentials whenever possible
-- use `${ENV_NAME}` for passwords
-- use `path` only for `sqlite`
-- use `host` / `port` / `database` for networked engines
-
 ## Related
 
 - [Runtime, Gateway, And Channels](/config/runtime-gateway-and-channels)

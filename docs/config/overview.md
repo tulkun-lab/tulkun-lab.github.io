@@ -85,8 +85,7 @@ Use the following split when editing the config.
   Covers Active Memory, Core Memory, dreaming flags, compaction, and
   personality selection.
 - [Hooks And Skill Extensions](/config/hooks-and-skill-extensions)
-  Covers lifecycle hooks and skill-specific extension configuration such as
-  `skills.database-query`.
+  Covers lifecycle hooks and skill-specific extension configuration.
 
 ## What This Reference Covers
 

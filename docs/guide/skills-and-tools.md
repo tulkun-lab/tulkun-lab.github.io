@@ -133,14 +133,14 @@ Skills are stored under a root as:
 <skill-root>/<skill-name>/SKILL.md
 ```
 
-For example, these all define a skill named `database-query` at different
+For example, these all define a skill named `example-skill` at different
 priorities:
 
 ```text
-<current-workspace>/.tulkun/skills/database-query/SKILL.md
-$TULKUN_HOME/workspace/skills/database-query/SKILL.md
-$TULKUN_HOME/skills/database-query/SKILL.md
-$TULKUN_HOME/skills/.system/database-query/SKILL.md
+<current-workspace>/.tulkun/skills/example-skill/SKILL.md
+$TULKUN_HOME/workspace/skills/example-skill/SKILL.md
+$TULKUN_HOME/skills/example-skill/SKILL.md
+$TULKUN_HOME/skills/.system/example-skill/SKILL.md
 ```
 
 If more than one root contains the same skill name, Tulkun uses the first match
@@ -163,7 +163,6 @@ Some skills expose their own config under the `skills:` section of
 
 This is especially important for skills that need external resources, such as:
 
-- database connections
 - service credentials
 - environment-specific policies
 
